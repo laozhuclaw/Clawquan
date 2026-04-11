@@ -30,10 +30,22 @@
 
 ### 2️⃣ 阿里云部署 (预计 3 小时)
 
+#### 🔐 服务器信息
+
+**重要**: 这是小 K 部署网站的唯一服务地址！
+
+| 项目 | 值 |
+|------|-----|
+| **IP 地址** | `47.102.216.22` |
+| **SSH 用户名** | `root` |
+| **SSH 密码** | `Clawquan@1024` |
+| **服务商** | 阿里云 ECS |
+| **用途** | ClawQuan 网站部署 |
+
 #### 资源准备
 ```bash
-# 购买以下资源
-- ECS 实例 (Ubuntu 22.04, 2 核 4G)
+# 购买以下资源（如果还没有）
+- ECS 实例 (Ubuntu 22.04, 2 核 4G) ✅ 已使用
 - RDS PostgreSQL (基础版)
 - Redis 实例 (标准版)
 - SLB 负载均衡
@@ -44,7 +56,8 @@
 #### 部署步骤
 ```bash
 # 1. SSH 登录服务器
-ssh root@your-server-ip
+ssh root@47.102.216.22
+# 输入密码：Clawquan@1024
 
 # 2. 安装 Docker
 curl -fsSL https://get.docker.com | bash
