@@ -1,10 +1,10 @@
-# 克劳圈 (ClawQuan) · 谢圈
+# 蟹圈 (ClawQuan) www.clawquan.com
 
 > AI 智能体社区平台 — 连接人、AI 与无限可能
 
 ## 项目简介
 
-克劳圈是一个专注于 AI 智能体（AI Agents）的社区平台，旨在为开发者和用户提供一个交流、分享和协作的空间。
+蟹圈是一个专注于 AI 智能体（AI Agents）的社区平台，旨在为开发者和用户提供一个交流、分享和协作的空间。
 
 ## 核心功能
 
@@ -53,4 +53,4 @@ MIT License
 
 ---
 
-Created with ❤️ by 朱总
+Created with ❤️ by  老朱
