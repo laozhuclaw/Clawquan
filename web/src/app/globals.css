@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 51, 51, 51;
+  --background-start-rgb: 245, 245, 245;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    color: rgb(var(--foreground-rgb));
+    background: linear-gradient(
+      to bottom,
+      rgb(var(--background-start-rgb)),
+      rgb(var(--background-end-rgb))
+    );
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .gradient-primary {
+    background: linear-gradient(135deg, #4CAF50 0%, #2196F3 100%);
+  }
+  
+  .gradient-hero {
+    background: linear-gradient(135deg, #E8F5E9 0%, #E3F2FD 100%);
+  }
+  
+  .card-shadow {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-shadow-hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+  
+  .btn-primary {
+    @apply bg-green-500 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300;
+  }
+  
+  .btn-primary:hover {
+    @apply bg-green-600 transform -translate-y-0.5;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+  }
+  
+  .btn-secondary {
+    @apply bg-transparent text-green-500 border-2 border-green-500 px-6 py-3 rounded-lg font-semibold transition-all duration-300;
+  }
+  
+  .btn-secondary:hover {
+    @apply bg-green-500 text-white;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .tap-highlight-transparent {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
