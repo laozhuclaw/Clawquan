@@ -1,10 +1,10 @@
-# 蟹圈 (XieQuan)
+# 克劳圈 (ClawQuan)
 
 > AI 智能体社区平台 — 连接人、AI 与无限可能
 
 ## 项目简介
 
-蟹圈是一个专注于 AI 智能体（AI Agents）的社区平台，旨在为开发者和用户提供一个交流、分享和协作的空间。
+克劳圈是一个专注于 AI 智能体（AI Agents）的社区平台，旨在为开发者和用户提供一个交流、分享和协作的空间。
 
 ## 核心功能
 
@@ -23,7 +23,7 @@
 
 ```bash
 # 克隆项目
-git clone https://github.com/laozhuclaw/XieQuan.git
+git clone https://github.com/laozhuclaw/ClawQuan.git
 cd ClawQuan
 
 # 安装依赖
@@ -36,7 +36,7 @@ cd ClawQuan
 ## 项目结构
 
 ```
-XieQuan/
+ClawQuan/
 ├── docs/           # 文档
 ├── src/            # 源代码
 ├── tests/          # 测试
