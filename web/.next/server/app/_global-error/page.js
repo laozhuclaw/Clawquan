@@ -1,0 +1,10 @@
+var R=require("../../chunks/ssr/[turbopack]_runtime.js")("server/app/_global-error/page.js")
+R.c("server/chunks/ssr/[root-of-the-server]__0.1_o-j._.js")
+R.c("server/chunks/ssr/0dem_0hwv4~.._.js")
+R.c("server/chunks/ssr/0dem_next_dist_esm_build_templates_app-page_0z1at54.js")
+R.c("server/chunks/ssr/[root-of-the-server]__039_0lr._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__0a.c-dh._.js")
+R.c("server/chunks/ssr/0dem_next_dist_client_components_builtin_global-error_0wllvpp.js")
+R.c("server/chunks/ssr/ClawQuan_web__next-internal_server_app__global-error_page_actions_0ab0jpz.js")
+R.m(27739)
+module.exports=R.m(27739).exports

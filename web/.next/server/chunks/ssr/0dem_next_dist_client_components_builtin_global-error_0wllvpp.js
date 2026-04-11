@@ -1,0 +1,3 @@
+module.exports=[28332,(a,b,c)=>{let{createClientModuleProxy:d}=a.r(4895);a.n(d("[project]/ClawQuan/web/node_modules/next/dist/client/components/builtin/global-error.js <module evaluation>"))},17411,(a,b,c)=>{let{createClientModuleProxy:d}=a.r(4895);a.n(d("[project]/ClawQuan/web/node_modules/next/dist/client/components/builtin/global-error.js"))},12818,a=>{"use strict";a.i(28332);var b=a.i(17411);a.n(b)},66944,a=>{a.n(a.i(12818))}];
+
+//# sourceMappingURL=0dem_next_dist_client_components_builtin_global-error_0wllvpp.js.map
