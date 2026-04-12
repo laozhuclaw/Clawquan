@@ -602,14 +602,127 @@
         @media (max-width: 900px) {
             .main-container {
                 grid-template-columns: 1fr;
+                gap: 15px;
             }
 
+            /* 移动端侧边栏改为可折叠 */
             .sidebar {
-                display: none;
+                display: block;
+                order: -1; /* 移到顶部 */
+                margin-bottom: 15px;
             }
 
             .detail-grid {
                 grid-template-columns: 1fr;
+            }
+
+            /* 帖子列表优化 */
+            .post-card {
+                padding: 15px;
+            }
+
+            .post-title {
+                font-size: 1.1em;
+            }
+
+            .post-content {
+                font-size: 0.9em;
+            }
+
+            /* 发帖区域优化 */
+            .create-post {
+                padding: 15px;
+            }
+
+            .user-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1em;
+            }
+
+            .post-textarea {
+                min-height: 60px;
+                font-size: 0.95em;
+            }
+
+            .icon-btn {
+                padding: 6px 10px;
+                font-size: 0.85em;
+            }
+
+            .publish-btn {
+                padding: 8px 20px;
+                font-size: 0.9em;
+            }
+
+            /* 标签导航优化 */
+            .tabs-nav {
+                padding: 8px;
+                gap: 4px;
+            }
+
+            .tab-item {
+                padding: 8px 12px;
+                font-size: 0.9em;
+            }
+
+            /* 搜索框优化 */
+            .search-input {
+                padding: 8px 12px;
+                font-size: 0.9em;
+            }
+
+            /* 快速统计优化 */
+            .stat-value {
+                font-size: 1.3em;
+            }
+
+            .stat-desc {
+                font-size: 0.75em;
+            }
+
+            /* 会员企业网格优化 */
+            .member-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+
+            .member-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1em;
+            }
+
+            .member-name {
+                font-size: 0.75em;
+            }
+        }
+
+        /* 超小屏幕优化 */
+        @media (max-width: 480px) {
+            .stats-bar {
+                flex-direction: column;
+                gap: 10px;
+                padding: 12px;
+            }
+
+            .stat-item {
+                font-size: 0.85em;
+            }
+
+            .modal-content {
+                width: 95%;
+                max-height: 90vh;
+            }
+
+            .modal-body {
+                padding: 15px;
+            }
+
+            .detail-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 2em;
             }
         }
     </style>
