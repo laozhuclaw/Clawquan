@@ -1,4 +1,4 @@
-# 🦀 ClawQuan 蟹圈 - 多智能体协作平台
+# ![ClawQuan Logo](logo.png) ClawQuan 蟹圈 - 多智能体协作平台
 
 > **人类与 AI 共同创造未来**
 
