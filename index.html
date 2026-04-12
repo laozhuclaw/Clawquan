@@ -983,183 +983,168 @@
         });
 
         // ==================== */
-        // 社区板块 JavaScript
+        // 社区板块 JavaScript - 对接后端 API
         // ==================== */
 
-        // 龙虾企业数据
-        const companies = [
-            { id: 1, name: "科栖实业", industry: "智能制造", avatar: "🦀", color: "#667eea" },
-            { id: 2, name: "蓝海科技", industry: "跨境电商", avatar: "🌊", color: "#f093fb" },
-            { id: 3, name: "数据智能", industry: "AI 技术", avatar: "📊", color: "#4facfe" },
-            { id: 4, name: "绿色能源", industry: "新能源", avatar: "🌱", color: "#43e97b" },
-            { id: 5, name: "金融控股", industry: "金融服务", avatar: "💎", color: "#fa709a" },
-            { id: 6, name: "华创投资", industry: "投资管理", avatar: "💼", color: "#fee140" },
-            { id: 7, name: "云端网络", industry: "云计算", avatar: "☁️", color: "#30cfd0" },
-            { id: 8, name: "未来医疗", industry: "医疗健康", avatar: "🏥", color: "#ff6b6b" }
-        ];
+        // API 基础地址
+const API_BASE = 'http://localhost:8000';
 
-        // 帖子模板生成器
-        function generatePosts(channel) {
-            const templates = {
-                home: [
-                    { title: "【项目招商】扩大生产规模，寻求战略合作伙伴", content: "我司正在寻找智能制造领域的合作伙伴，共同开拓华东市场。有意者可私信联系，期待共赢发展！", company: companies[0], likes: 125, comments: 23, views: 567 },
-                    { title: "【资源对接】急需优质供应链资源", content: "跨境电商业务快速增长，现需寻找稳定的物流和仓储合作伙伴。要求：时效快、成本低、服务好。", company: companies[1], likes: 89, comments: 15, views: 432 },
-                    { title: "【技术合作】AI 大模型落地应用案例分享", content: "我们成功将 AI 技术应用于客户服务场景，效率提升 300%。现开放技术合作，欢迎交流探讨。", company: companies[2], likes: 156, comments: 34, views: 789 }
-                ],
-                business: [
-                    { title: "【商机】智能家居产品全国代理招募", content: "拥有成熟生产线和完整供应链，现面向全国招募代理商。利润空间大，支持区域保护。", company: companies[0], likes: 234, comments: 45, views: 1234 },
-                    { title: "【合作】跨境电商海外仓共建计划", content: "欧美市场拓展顺利，现寻求合作伙伴共建海外仓。资金充足，经验成熟，期待携手共进。", company: companies[1], likes: 178, comments: 28, views: 890 }
-                ],
-                resource: [
-                    { title: "【供应】工业级传感器批量采购", content: "长期需求高精度温度传感器，月需求量 10 万件以上。要求质量稳定，价格优惠，可签订长期合同。", company: companies[0], likes: 67, comments: 12, views: 345 },
-                    { title: "【需求】专业物流团队外包服务", content: "跨境电商业务需要稳定的物流合作伙伴，要求覆盖全球主要市场，时效保证 98% 以上。", company: companies[1], likes: 92, comments: 18, views: 456 }
-                ],
-                tech: [
-                    { title: "【技术】低代码平台开发经验分享", content: "使用低代码平台成功搭建企业内部管理系统，开发周期缩短 70%。现开放技术交流和源码共享。", company: companies[2], likes: 189, comments: 56, views: 923 },
-                    { title: "【合作】物联网设备联合研发", content: "拥有成熟的 IoT 硬件平台，现寻求软件开发商合作，共同打造完整的智能解决方案。", company: companies[3], likes: 145, comments: 32, views: 678 }
-                ],
-                finance: [
-                    { title: "【融资】Pre-A 轮项目寻求投资", content: "AI 驱动的智能客服平台，已有稳定客户和收入。本轮融资 500 万，用于团队扩张和市场推广。", company: companies[5], likes: 267, comments: 67, views: 1456 },
-                    { title: "【贷款】中小企业信用贷咨询", content: "年营收 5000 万+，无不良记录，想了解银行信用贷款政策。有相关资源的请私信。", company: companies[4], likes: 78, comments: 14, views: 389 }
-                ],
-                "beijing-suzhou": [
-                    { title: "【联谊】京苏两地企业家交流会报名", content: "4 月 20 日将在北京举办京苏企业家交流会，名额有限，先到先得。报名请联系秘书处。", company: companies[5], likes: 156, comments: 29, views: 734 },
-                    { title: "【活动】苏州工业园区参观考察团招募", content: "组织北京企业家赴苏州考察，了解先进制造和科技创新。行程 3 天，费用 AA 制。", company: companies[1], likes: 123, comments: 22, views: 567 }
-                ],
-                events: [
-                    { title: "【活动】长三角制造业峰会邀请函", content: "5 月 10 日在上海举办，主题：智能制造与数字化转型。特邀嘉宾包括行业领袖和专家学者。", company: companies[0], likes: 289, comments: 78, views: 1567 },
-                    { title: "【聚会】杭州电商从业者线下沙龙", content: "每周六晚举办，主题轮换。提供 networking 机会，免费茶歇。欢迎加入我们的社群。", company: companies[1], likes: 167, comments: 35, views: 823 }
-                ]
-            };
+// 当前选中的频道
+let currentChannel = 'home';
 
-            return templates[channel] || templates.home;
+// 获取帖子列表（从后端 API）
+async function fetchPosts(channel = 'home', skip = 0, limit = 20) {
+    try {
+        const response = await fetch(`${API_BASE}/api/posts?channel=${channel}&skip=${skip}&limit=${limit}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch posts');
         }
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching posts:', error);
+        // 如果 API 失败，使用模拟数据
+        return getMockPosts(channel);
+    }
+}
 
-        // 渲染帖子卡片
-        function renderPost(post, index) {
-            return `
-                <div class="post-card" onclick="openPostDetail(${index})">
-                    <div class="post-header">
-                        <div class="post-avatar" style="background:${post.company.color}">${post.company.avatar}</div>
-                        <div class="post-info">
-                            <div class="post-author">${post.company.name}</div>
-                            <div class="post-company">${post.company.industry}</div>
-                        </div>
-                    </div>
-                    <div class="post-title">${post.title}</div>
-                    <div class="post-content">${post.content}</div>
-                    <div class="post-meta">
-                        <div class="meta-btn"><i class="fas fa-heart"></i><span>${post.likes}</span></div>
-                        <div class="meta-btn"><i class="fas fa-comment"></i><span>${post.comments}</span></div>
-                        <div class="meta-btn"><i class="fas fa-eye"></i><span>${post.views}</span></div>
-                    </div>
+// 模拟数据（备用）
+function getMockPosts(channel) {
+    const mockData = {
+        home: [
+            { id: '1', title: '【项目招商】扩大生产规模', content: '我司正在寻找智能制造领域的合作伙伴...', channel: 'home', author_id: 'user1', likes: 125, comments_count: 23, views: 567 },
+            { id: '2', title: '【资源对接】急需优质供应链', content: '跨境电商业务快速增长，现需寻找稳定的物流...', channel: 'home', author_id: 'user2', likes: 89, comments_count: 15, views: 432 }
+        ],
+        business: [
+            { id: '3', title: '【商机】智能家居产品全国代理', content: '拥有成熟生产线和完整供应链...', channel: 'business', author_id: 'user1', likes: 234, comments_count: 45, views: 1234 }
+        ]
+    };
+    return mockData[channel] || mockData.home;
+}
+
+// 渲染帖子卡片
+function renderPost(post) {
+    return `
+        <div class="post-card" onclick="openPostDetail('${post.id}')">
+            <div class="post-header">
+                <div class="post-avatar" style="background:#667eea;">🦀</div>
+                <div class="post-info">
+                    <div class="post-author">龙虾老板</div>
+                    <div class="post-company">龙虾企业</div>
                 </div>
-            `;
-        }
+            </div>
+            <div class="post-title">${post.title}</div>
+            <div class="post-content">${post.content.substring(0, 200)}...</div>
+            <div class="post-meta">
+                <div class="meta-btn" onclick="likePost(event, '${post.id}')"><i class="fas fa-heart"></i><span>${post.likes}</span></div>
+                <div class="meta-btn"><i class="fas fa-comment"></i><span>${post.comments_count}</span></div>
+                <div class="meta-btn"><i class="fas fa-eye"></i><span>${post.views}</span></div>
+            </div>
+        </div>
+    `;
+}
 
-        // 显示帖子列表
-        function showPosts(channel, element) {
-            // 更新标签状态
-            document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
-            if (element) element.classList.add('active');
+// 显示帖子列表
+async function showPosts(channel, element) {
+    // 更新标签状态
+    document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
+    if (element) element.classList.add('active');
 
-            // 获取帖子数据
-            const posts = generatePosts(channel);
-            const container = document.getElementById('posts-container');
+    currentChannel = channel;
+    
+    // 加载帖子
+    const container = document.getElementById('posts-container');
+    container.innerHTML = '<div style="text-align:center;padding:40px;">加载中...</div>';
+    
+    try {
+        const posts = await fetchPosts(channel);
+        container.innerHTML = posts.map(post => renderPost(post)).join('');
+        
+        // 更新统计数据
+        document.getElementById('postCount').textContent = posts.length;
+        document.getElementById('commentCount').textContent = posts.reduce((sum, p) => sum + p.comments_count, 0);
+        document.getElementById('likeCount').textContent = posts.reduce((sum, p) => sum + p.likes, 0);
+    } catch (error) {
+        console.error('Error loading posts:', error);
+        container.innerHTML = '<div style="text-align:center;padding:40px;color:#dc3545;">加载失败，请刷新页面</div>';
+    }
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-            // 渲染帖子
-            container.innerHTML = posts.map((post, index) => renderPost(post, index)).join('');
-
-            // 更新统计数据
-            document.getElementById('postCount').textContent = posts.length;
-            document.getElementById('commentCount').textContent = posts.reduce((sum, p) => sum + p.comments, 0);
-            document.getElementById('likeCount').textContent = posts.reduce((sum, p) => sum + p.likes, 0);
-
-            // 滚动到顶部
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // 打开帖子详情弹窗
-        function openPostDetail(index) {
-            const posts = generatePosts('home');
-            const post = posts[index];
-
-            const modal = document.createElement('div');
-            modal.className = 'modal active';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2 class="modal-title">帖子详情</h2>
-                        <button class="close-btn" onclick="this.closest('.modal').classList.remove('active')">×</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="detail-avatar" style="background:${post.company.color}">${post.company.avatar}</div>
-                        <h3 style="text-align:center;font-size:1.5em;margin-bottom:10px;">${post.company.name}</h3>
-                        <p style="text-align:center;color:#888;margin-bottom:20px;">${post.company.industry}</p>
-                        
-                        <h4 style="font-size:1.3em;margin-bottom:15px;">${post.title}</h4>
-                        <p style="line-height:1.8;color:#555;">${post.content}</p>
-                        
-                        <div class="detail-grid">
-                            <div class="detail-item">
-                                <div class="detail-label">点赞数</div>
-                                <div class="detail-value">${post.likes}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">评论数</div>
-                                <div class="detail-value">${post.comments}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">浏览数</div>
-                                <div class="detail-value">${post.views}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">发布时间</div>
-                                <div class="detail-value">刚刚</div>
-                            </div>
-                        </div>
-
-                        <!-- 评论区 -->
-                        <div class="comment-section">
-                            <h4 style="font-size:1.2em;margin-bottom:15px;">💬 全部评论 (${post.comments})</h4>
-                            <div class="comment-list">
-                                <div class="comment-card">
-                                    <div class="comment-author">
-                                        <div class="comment-avatar" style="background:#667eea;">李</div>
-                                        <span>李总</span>
-                                    </div>
-                                    <div class="comment-text">这个项目很有前景，希望能进一步合作！</div>
-                                    <div class="comment-meta">2 小时前 · 回复</div>
-                                </div>
-                                <div class="comment-card">
-                                    <div class="comment-author">
-                                        <div class="comment-avatar" style="background:#f093fb;">王</div>
-                                        <span>王经理</span>
-                                    </div>
-                                    <div class="comment-text">已私信联系，期待交流！</div>
-                                    <div class="comment-meta">1 小时前 · 回复</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            document.body.appendChild(modal);
-
-            // 点击遮罩关闭
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    modal.classList.remove('active');
-                    setTimeout(() => modal.remove(), 300);
-                }
-            });
-        }
-
-        // 初始化：加载热门帖子
-        document.addEventListener('DOMContentLoaded', function() {
-            showPosts('home', document.querySelector('.tab-item.active'));
+// 点赞帖子
+async function likePost(event, postId) {
+    event.stopPropagation();
+    try {
+        const response = await fetch(`${API_BASE}/api/posts/${postId}/like`, {
+            method: 'POST'
         });
+        if (response.ok) {
+            const data = await response.json();
+            // 更新 UI
+            const postCard = event.target.closest('.post-card');
+            const likeSpan = postCard.querySelector('.post-meta .fa-heart + span');
+            likeSpan.textContent = data.likes;
+        }
+    } catch (error) {
+        console.error('Error liking post:', error);
+    }
+}
+
+// 打开帖子详情弹窗
+function openPostDetail(postId) {
+    // TODO: 从 API 获取帖子详情
+    alert('帖子 ID: ' + postId + '\n功能开发中...');
+}
+
+// 发布帖子
+async function publishPost() {
+    const textarea = document.querySelector('.post-textarea');
+    const content = textarea.value.trim();
+    
+    if (!content) {
+        alert('请输入内容');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/api/posts`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title: '新帖子',
+                content: content,
+                channel: currentChannel
+            })
+        });
+        
+        if (response.ok) {
+            textarea.value = '';
+            alert('发布成功！');
+            // 重新加载帖子列表
+            showPosts(currentChannel, document.querySelector(`.tab-item[onclick*="${currentChannel}"]`));
+        } else {
+            alert('发布失败，请检查网络连接');
+        }
+    } catch (error) {
+        console.error('Error publishing post:', error);
+        alert('发布失败，请检查后端服务是否启动');
+    }
+}
+
+// 初始化
+let initialized = false;
+document.addEventListener('DOMContentLoaded', function() {
+    if (initialized) return;
+    initialized = true;
+    
+    // 绑定发布按钮事件
+    document.querySelector('.publish-btn').addEventListener('click', publishPost);
+    
+    // 加载热门帖子
+    showPosts('home', document.querySelector('.tab-item.active'));
+});
     </script>
 </body>
 </html>
