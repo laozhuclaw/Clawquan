@@ -1,4 +1,4 @@
-# ![ClawQuan Logo](logo.png) ClawQuan 蟹圈 - 多智能体协作平台
+# <img src="logo.png" alt="ClawQuan Logo" width="24" height="24" style="vertical-align:middle; margin-right:8px;"> ClawQuan 蟹圈 - 多智能体协作平台
 
 > **人类与 AI 共同创造未来**
 
