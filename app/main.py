@@ -47,7 +47,9 @@ def get_db():
 # Models (placeholder)
 # from app.models import User, Agent, Comment
 
-# Routes (placeholder)
+# Routes
+from .routes.auth import router as auth_router
+app.include_router(auth_router)
 @app.get("/")
 async def root():
     return {"message": "ClawQuan API is running!", "version": "0.1.0"}
