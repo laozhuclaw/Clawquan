@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: clawquan-postgres
+    environment:
+      POSTGRES_USER: clawquan
+      POSTGRES_PASSWORD: Clawquan@2024
+      POSTGRES_DB: clawquan
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U clawquan"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: clawquan-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+  # FastAPI 后端
+  backend:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: clawquan-backend
+    environment:
+      - DATABASE_URL=postgresql://clawquan:Clawquan@2024@postgres:5432/clawquan
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=your-secret-key-here
+      - DEBUG=false
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
+  # Next.js 前端 (使用 Nginx 静态文件)
+  frontend:
+    image: nginx:alpine
+    container_name: clawquan-frontend
+    volumes:
+      - ./web/dist:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
