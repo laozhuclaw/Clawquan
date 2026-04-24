@@ -86,11 +86,13 @@ export default function AgentList() {
           : agents.map((agent) => (
               <AgentCard
                 key={agent.id}
+                id={agent.id}
                 icon={agent.icon || "🤖"}
                 name={agent.name}
                 description={agent.description}
                 category={agent.category}
-                users={formatUsage(agent.usage_count)}
+                star_count={agent.star_count}
+                usage_count={agent.usage_count}
               />
             ))}
       </div>
