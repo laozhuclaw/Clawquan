@@ -7,7 +7,7 @@ from typing import List, Optional
 import uuid
 
 from ..models import Agent, User
-from ..main import get_db
+from ..database import get_db
 from ..routes.auth import get_current_user
 
 router = APIRouter(prefix="/api/agents", tags=["Agents"])
@@ -38,7 +38,8 @@ async def list_agents(
         "name": agent.name,
         "description": agent.description,
         "category": agent.category,
-        "tags": agent.tags,
+        "tags": agent.tags or [],
+        "icon": agent.icon,
         "is_public": agent.is_public,
         "star_count": agent.star_count,
         "usage_count": agent.usage_count
@@ -55,7 +56,8 @@ async def get_agent(agent_id: str, db: Session = Depends(get_db)):
         "name": agent.name,
         "description": agent.description,
         "category": agent.category,
-        "tags": agent.tags,
+        "tags": agent.tags or [],
+        "icon": agent.icon,
         "api_endpoint": agent.api_endpoint,
         "is_public": agent.is_public,
         "star_count": agent.star_count,

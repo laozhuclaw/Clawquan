@@ -7,7 +7,7 @@ from typing import List
 import uuid
 
 from ..models import Comment, User
-from ..main import get_db
+from ..database import get_db
 from ..routes.auth import get_current_user
 
 router = APIRouter(prefix="/api/comments", tags=["Comments"])

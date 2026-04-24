@@ -1,33 +1,33 @@
 """
-ClawQuan Backend API
-FastAPI + PostgreSQL + JWT Authentication
+ClawQuan Backend API — FastAPI entry point.
+
+Database/session plumbing lives in app/database.py.
+Routes live in app/routes/.
 """
+from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.pool import StaticPool
-import os
 
-# Database
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./clawquan.db")
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
-)
-SessionLocal = lambda: Session(engine)
-Base = declarative_base()
+from .database import init_db
 
-# App
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: ensure tables exist
+    init_db()
+    yield
+    # Shutdown: nothing to clean up yet
+
+
 app = FastAPI(
     title="ClawQuan API",
     description="多智能体协作平台 API",
-    version="0.1.0"
+    version="0.2.0",
+    lifespan=lifespan,
 )
 
-# CORS
+# CORS — allow local Next.js dev server and the deployed site
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -36,35 +36,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Dependencies
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-# Models (placeholder)
-# from app.models import User, Agent, Comment
-
-# Routes
-from .routes.auth import router as auth_router
-from .routes.agents import router as agents_router
-from .routes.comments import router as comments_router
-from .routes.posts import router as posts_router
+# Register routes
+from .routes.auth import router as auth_router  # noqa: E402
+from .routes.agents import router as agents_router  # noqa: E402
+from .routes.comments import router as comments_router  # noqa: E402
+from .routes.posts import router as posts_router  # noqa: E402
+from .routes.organizations import router as organizations_router  # noqa: E402
 
 app.include_router(auth_router)
 app.include_router(agents_router)
 app.include_router(comments_router)
 app.include_router(posts_router)
+app.include_router(organizations_router)
+
+
 @app.get("/")
 async def root():
-    return {"message": "ClawQuan API is running!", "version": "0.1.0"}
+    return {"message": "ClawQuan API is running!", "version": app.version}
+
 
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
 
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

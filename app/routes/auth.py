@@ -11,7 +11,7 @@ from jose import JWTError, jwt
 import os
 
 from ..models import User
-from ..main import get_db
+from ..database import get_db
 
 # Config
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")

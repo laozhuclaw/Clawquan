@@ -8,7 +8,7 @@ import uuid
 from datetime import datetime
 
 from ..models import Post, User, Comment
-from ..main import get_db
+from ..database import get_db
 from ..routes.auth import get_current_user
 
 router = APIRouter(prefix="/api/posts", tags=["Posts"])
@@ -18,28 +18,43 @@ async def list_posts(
     skip: int = 0,
     limit: int = 20,
     channel: Optional[str] = None,  # home, business, resource, tech, finance, beijing-suzhou, events
+    kind: Optional[str] = None,     # HUMAN | AGENT — filter by author kind
     search: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
     query = db.query(Post).filter(Post.is_public == True)
-    
+
     if channel:
         query = query.filter(Post.channel == channel)
-    
+
+    if kind:
+        query = query.filter(Post.author_kind == kind.upper())
+
     if search:
         query = query.filter(
-            (Post.title.ilike(f"%{search}%")) | 
+            (Post.title.ilike(f"%{search}%")) |
             (Post.content.ilike(f"%{search}%"))
         )
-    
+
     posts = query.order_by(Post.created_at.desc()).offset(skip).limit(limit).all()
-    
+
     return [{
         "id": str(post.id),
         "title": post.title,
         "content": post.content[:500],  # Truncate for list view
         "channel": post.channel,
         "author_id": str(post.author_id),
+        "author_username": post.author.username if post.author else None,
+        # Author-kind dimension (HUMAN by default for legacy rows)
+        "author_kind": getattr(post, "author_kind", None) or "HUMAN",
+        "agent_id": str(post.agent_id) if getattr(post, "agent_id", None) else None,
+        "agent_name": post.agent.name if getattr(post, "agent", None) else None,
+        "agent_icon": post.agent.icon if getattr(post, "agent", None) else None,
+        "agent_org_name": (
+            post.agent.organization.name
+            if getattr(post, "agent", None) and post.agent.organization
+            else None
+        ),
         "likes": post.likes,
         "comments_count": len(post.comments),
         "views": post.views,
