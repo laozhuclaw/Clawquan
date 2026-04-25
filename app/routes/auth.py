@@ -4,11 +4,15 @@ User Routes - Registration, Login, Authentication
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 import os
+import random
+import re
+import time
+import uuid
 
 from ..models import User
 from ..database import get_db
@@ -17,6 +21,10 @@ from ..database import get_db
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30 * 24 * 7  # 7 days
+PHONE_CODE_TTL_SECONDS = 5 * 60
+DEMO_SMS_CODES = os.getenv("DEMO_SMS_CODES", "true").lower() == "true"
+
+_phone_codes: dict[str, tuple[str, float]] = {}
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -30,9 +38,34 @@ def _user_to_dict(user: User) -> dict:
         "id": str(user.id),
         "email": user.email,
         "username": user.username,
+        "phone": user.phone,
         "identity_type": "HUMAN",
         "is_human": True,
     }
+
+
+def _normalize_phone(phone: str) -> str:
+    normalized = re.sub(r"\D", "", phone or "")
+    if len(normalized) < 6 or len(normalized) > 20:
+        raise HTTPException(status_code=400, detail="Invalid phone number")
+    return normalized
+
+
+def _verify_phone_code(phone: str, code: str) -> None:
+    expected = _phone_codes.get(phone)
+    if not expected:
+        raise HTTPException(status_code=400, detail="Verification code not found or expired")
+    saved_code, expires_at = expected
+    if time.time() > expires_at:
+        _phone_codes.pop(phone, None)
+        raise HTTPException(status_code=400, detail="Verification code expired")
+    if saved_code != (code or "").strip():
+        raise HTTPException(status_code=400, detail="Invalid verification code")
+    _phone_codes.pop(phone, None)
+
+
+def _phone_email(phone: str) -> str:
+    return f"{phone}@phone.clawquan.local"
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -72,16 +105,51 @@ async def get_current_user(
         raise credentials_exception
     return user
 
+@router.post("/send-code")
+async def send_phone_code(phone: str, purpose: str = "login"):
+    normalized = _normalize_phone(phone)
+    code = f"{random.randint(0, 999999):06d}"
+    _phone_codes[normalized] = (code, time.time() + PHONE_CODE_TTL_SECONDS)
+    response = {
+        "message": "Verification code sent",
+        "phone": normalized,
+        "purpose": purpose,
+        "expires_in": PHONE_CODE_TTL_SECONDS,
+    }
+    if DEMO_SMS_CODES:
+        response["demo_code"] = code
+    return response
+
+
 @router.post("/register", status_code=status.HTTP_201_CREATED)
-async def register(email: str, password: str, username: str = None, db: Session = Depends(get_db)):
-    # Check if user exists
-    existing_user = db.query(User).filter(
-        (User.email == email) | (User.username == username)
-    ).first()
+async def register(
+    email: str = None,
+    password: str = None,
+    username: str = None,
+    phone: str = None,
+    code: str = None,
+    db: Session = Depends(get_db),
+):
+    if phone:
+        normalized_phone = _normalize_phone(phone)
+        _verify_phone_code(normalized_phone, code or "")
+        email = email or _phone_email(normalized_phone)
+        password = password or uuid.uuid4().hex
+    else:
+        normalized_phone = None
+        if not email or not password:
+            raise HTTPException(status_code=400, detail="Email/password or phone/code is required")
+
+    duplicate_filters = [User.email == email]
+    if username:
+        duplicate_filters.append(User.username == username)
+    if normalized_phone:
+        duplicate_filters.append(User.phone == normalized_phone)
+    existing_user = db.query(User).filter(or_(*duplicate_filters)).first()
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email or username already registered"
+            detail="Email, phone, or username already registered"
         )
     
     # Create new user
@@ -89,16 +157,21 @@ async def register(email: str, password: str, username: str = None, db: Session 
     new_user = User(
         email=email,
         username=username,
-        password_hash=hashed_password
+        password_hash=hashed_password,
+        phone=normalized_phone,
     )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     
-    return {
+    response = {
         "message": "User registered successfully",
         "user": _user_to_dict(new_user)
     }
+    if normalized_phone:
+        response["access_token"] = create_access_token(data={"sub": new_user.email})
+        response["token_type"] = "bearer"
+    return response
 
 @router.post("/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
@@ -116,6 +189,22 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
         "access_token": access_token,
         "token_type": "bearer",
         "user": _user_to_dict(user)
+    }
+
+
+@router.post("/login-code")
+async def login_with_phone_code(phone: str, code: str, db: Session = Depends(get_db)):
+    normalized_phone = _normalize_phone(phone)
+    _verify_phone_code(normalized_phone, code)
+    user = db.query(User).filter(User.phone == normalized_phone).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Phone number is not registered")
+
+    access_token = create_access_token(data={"sub": user.email})
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": _user_to_dict(user),
     }
 
 @router.get("/me", response_model=dict)

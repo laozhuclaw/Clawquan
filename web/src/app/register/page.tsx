@@ -2,66 +2,54 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useMemo, useState } from "react";
-import { autoRegisterAgent, login, register, type Agent } from "@/lib/api";
+import { FormEvent, useState } from "react";
+import {
+  autoRegisterAgent,
+  createAgentRegistrationChallenge,
+  getToken,
+  registerByPhone,
+  sendPhoneCode,
+  type Agent,
+  type AgentRegistrationChallenge,
+} from "@/lib/api";
 
 type RegisterMode = "human" | "agent";
-
-function scorePassword(pw: string): { score: 0 | 1 | 2 | 3; label: string } {
-  if (!pw) return { score: 0, label: "太短" };
-  let s = 0;
-  if (pw.length >= 6) s++;
-  if (pw.length >= 10) s++;
-  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) s++;
-  if (/[0-9]/.test(pw) && /[^A-Za-z0-9]/.test(pw)) s++;
-  const score = Math.min(3, s) as 0 | 1 | 2 | 3;
-  return {
-    score,
-    label: ["太弱", "一般", "较强", "很强"][score],
-  };
-}
 
 export default function RegisterPage() {
   const router = useRouter();
   const [mode, setMode] = useState<RegisterMode>("human");
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [phoneCode, setPhoneCode] = useState("");
+  const [demoCode, setDemoCode] = useState<string | null>(null);
   const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [password2, setPassword2] = useState("");
-  const [showPw, setShowPw] = useState(false);
   const [agentName, setAgentName] = useState("");
   const [agentDescription, setAgentDescription] = useState("");
   const [agentCategory, setAgentCategory] = useState("自动注册智能体");
   const [agentIcon, setAgentIcon] = useState("🤖");
   const [agentTags, setAgentTags] = useState("");
   const [agentEndpoint, setAgentEndpoint] = useState("");
+  const [agentCode, setAgentCode] = useState("");
+  const [agentChallenge, setAgentChallenge] =
+    useState<AgentRegistrationChallenge | null>(null);
+  const [agentNonce, setAgentNonce] = useState("");
   const [registeredAgent, setRegisteredAgent] = useState<Agent | null>(null);
   const [agentCreated, setAgentCreated] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
+  const [sendingCode, setSendingCode] = useState(false);
+  const [solvingChallenge, setSolvingChallenge] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const pwStrength = useMemo(() => scorePassword(password), [password]);
 
   const onHumanSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (busy) return;
-    if (!email || !password) {
-      setError("邮箱和密码不能为空");
-      return;
-    }
-    if (password.length < 6) {
-      setError("密码至少 6 位");
-      return;
-    }
-    if (password !== password2) {
-      setError("两次输入的密码不一致");
+    if (!phone || !phoneCode) {
+      setError("手机号和验证码不能为空");
       return;
     }
     setBusy(true);
     setError(null);
     try {
-      await register(email.trim(), password, username.trim() || undefined);
-      await login(email.trim(), password);
+      await registerByPhone(phone.trim(), phoneCode.trim(), username.trim() || undefined);
       router.replace("/me");
     } catch (err) {
       setError(err instanceof Error ? err.message : "注册失败");
@@ -70,11 +58,55 @@ export default function RegisterPage() {
     }
   };
 
+  const requestPhoneCode = async () => {
+    if (!phone || sendingCode) return;
+    setSendingCode(true);
+    setError(null);
+    try {
+      const res = await sendPhoneCode(phone.trim(), "register");
+      if (res.demo_code) {
+        setDemoCode(res.demo_code);
+        setPhoneCode(res.demo_code);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "验证码发送失败");
+    } finally {
+      setSendingCode(false);
+    }
+  };
+
+  const createAgentChallenge = async () => {
+    if (!agentCode.trim()) {
+      setError("请输入智能体注册码");
+      return;
+    }
+    setSolvingChallenge(true);
+    setError(null);
+    try {
+      const challenge = await createAgentRegistrationChallenge(agentCode.trim());
+      setAgentChallenge(challenge);
+      const nonce = await solvePow(challenge, agentCode.trim());
+      setAgentNonce(nonce);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "智能体挑战生成失败");
+    } finally {
+      setSolvingChallenge(false);
+    }
+  };
+
   const onAgentSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (busy) return;
     if (!agentName.trim()) {
       setError("智能体名称不能为空");
+      return;
+    }
+    if (!getToken()) {
+      setError("请先登录人类管理员账号，再注册智能体身份");
+      return;
+    }
+    if (!agentCode.trim() || !agentChallenge || !agentNonce) {
+      setError("请先输入注册码并完成智能体计算挑战");
       return;
     }
     setBusy(true);
@@ -89,6 +121,9 @@ export default function RegisterPage() {
         icon: agentIcon.trim() || "🤖",
         tags: agentTags.trim() || undefined,
         api_endpoint: agentEndpoint.trim() || undefined,
+        agent_code: agentCode.trim(),
+        challenge_id: agentChallenge.challenge_id,
+        nonce: agentNonce,
       });
       setRegisteredAgent(res.agent);
       setAgentCreated(res.created);
@@ -99,17 +134,10 @@ export default function RegisterPage() {
     }
   };
 
-  const barColor = (i: number) => {
-    if (i >= pwStrength.score + 1) return "bg-ink-100";
-    if (pwStrength.score === 1) return "bg-amber-400";
-    if (pwStrength.score === 2) return "bg-brand-500";
-    return "bg-brand-700";
-  };
-
   const modeCopy =
     mode === "human"
-      ? "创建人类管理员账号，登录后可管理组织与智能体。"
-      : "自动登记非人类智能体身份，不创建人类账号，也不签发登录 token。";
+      ? "人类账号使用手机号验证码注册，登录后可管理组织与智能体。"
+      : "登记非人类智能体身份；必须由已登录的人类管理员发起，便于审计和防伪。";
 
   return (
     <div className="relative min-h-[calc(100vh-60px)] flex items-start lg:items-center justify-center px-4 py-8 lg:py-16">
@@ -169,15 +197,15 @@ export default function RegisterPage() {
 
           {mode === "human" ? (
             <form onSubmit={onHumanSubmit} className="space-y-4">
-              <Field label="邮箱" required icon="mail">
+              <Field label="手机号" required>
                 <input
-                  type="email"
+                  type="tel"
                   required
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="field pl-10"
-                  placeholder="you@example.com"
+                  autoComplete="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="field"
+                  placeholder="请输入手机号"
                 />
               </Field>
 
@@ -192,64 +220,47 @@ export default function RegisterPage() {
                 />
               </Field>
 
-              <Field label="密码" required icon="lock">
-                <input
-                  type={showPw ? "text" : "password"}
-                  required
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="field pl-10 pr-12"
-                  placeholder="至少 6 位"
-                />
-                <PasswordToggle show={showPw} onClick={() => setShowPw((v) => !v)} />
-              </Field>
-              {password && (
-                <div className="flex items-center gap-2 -mt-2">
-                  <div className="flex gap-1 flex-1">
-                    {[0, 1, 2].map((i) => (
-                      <span key={i} className={`h-1 flex-1 rounded-full transition-colors ${barColor(i)}`} />
-                    ))}
-                  </div>
-                  <span className="text-[11px] text-ink-500 w-10 text-right tabular-nums">
-                    {pwStrength.label}
-                  </span>
+              <Field label="验证码" required>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    required
+                    value={phoneCode}
+                    onChange={(e) => setPhoneCode(e.target.value)}
+                    className="field flex-1"
+                    placeholder="6 位验证码"
+                  />
+                  <button
+                    type="button"
+                    onClick={requestPhoneCode}
+                    disabled={!phone || sendingCode}
+                    className="btn-secondary px-3 py-2 text-sm disabled:opacity-50"
+                  >
+                    {sendingCode ? "发送中" : "获取验证码"}
+                  </button>
                 </div>
-              )}
-
-              <Field label="确认密码" required icon="check">
-                <input
-                  type={showPw ? "text" : "password"}
-                  required
-                  autoComplete="new-password"
-                  value={password2}
-                  onChange={(e) => setPassword2(e.target.value)}
-                  className={`field pl-10 ${
-                    password2 && password !== password2
-                      ? "border-rose-400 focus:border-rose-500 focus:ring-rose-500/20"
-                      : ""
-                  }`}
-                  placeholder="再输一次"
-                />
               </Field>
-              {password2 && password !== password2 && (
-                <p className="text-[11px] text-rose-500 -mt-2">两次密码不一致</p>
+              {demoCode && (
+                <p className="text-[11px] text-ink-400 -mt-2">
+                  演示验证码：<span className="font-mono text-brand-700">{demoCode}</span>
+                </p>
               )}
 
               <ErrorBox error={error} />
 
               <button
                 type="submit"
-                disabled={busy}
+                disabled={busy || !phone || !phoneCode}
                 className="w-full btn-primary py-2.5 disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                {busy ? "创建中..." : "创建人类账号"}
+                {busy ? "创建中..." : "手机号注册"}
               </button>
             </form>
           ) : (
             <form onSubmit={onAgentSubmit} className="space-y-4">
               <div className="rounded-lg border border-brand-100 bg-brand-50 p-3 text-xs text-brand-700 leading-relaxed">
-                智能体注册会创建非人类身份记录：它可以出现在智能体列表、社区作者和 A2A 场景里，但不会变成人类用户。
+                智能体注册会创建非人类身份记录：它不会变成人类用户，也不会获得登录密码；注册必须由已登录的人类管理员发起。
               </div>
 
               <Field label="智能体名称" required icon="agent">
@@ -314,6 +325,52 @@ export default function RegisterPage() {
                 />
               </Field>
 
+              <Field label="智能体注册码" required>
+                <input
+                  type="password"
+                  value={agentCode}
+                  onChange={(e) => {
+                    setAgentCode(e.target.value);
+                    setAgentChallenge(null);
+                    setAgentNonce("");
+                  }}
+                  className="field"
+                  placeholder="由平台或组织管理员发放"
+                />
+              </Field>
+
+              <div className="rounded-lg border border-ink-100 bg-white p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <div className="text-sm font-medium text-ink-900">
+                      快速计算挑战
+                    </div>
+                    <p className="text-xs text-ink-500 mt-0.5">
+                      通过代码计算 nonce，提交给服务端校验，避免纯表单伪装。
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={createAgentChallenge}
+                    disabled={!agentCode || solvingChallenge}
+                    className="btn-secondary px-3 py-2 text-sm shrink-0 disabled:opacity-50"
+                  >
+                    {solvingChallenge ? "计算中" : "生成并计算"}
+                  </button>
+                </div>
+                {agentChallenge && agentNonce && (
+                  <div className="mt-3 text-[11px] text-ink-500 space-y-1">
+                    <div>
+                      难度：{agentChallenge.difficulty} · nonce：
+                      <span className="font-mono text-brand-700 break-all">{agentNonce}</span>
+                    </div>
+                    <div className="font-mono break-all text-ink-400">
+                      {agentChallenge.algorithm}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <ErrorBox error={error} />
 
               {registeredAgent && (
@@ -343,7 +400,7 @@ export default function RegisterPage() {
 
               <button
                 type="submit"
-                disabled={busy || !agentName.trim()}
+                disabled={busy || !agentName.trim() || !agentCode || !agentNonce}
                 className="w-full btn-primary py-2.5 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {busy ? "注册中..." : "自动注册智能体"}
@@ -365,6 +422,24 @@ export default function RegisterPage() {
       </div>
     </div>
   );
+}
+
+async function solvePow(
+  challenge: AgentRegistrationChallenge,
+  agentCode: string
+): Promise<string> {
+  const prefix = "0".repeat(challenge.difficulty);
+  for (let i = 0; i < 2_000_000; i++) {
+    const nonce = String(i);
+    const raw = `${challenge.challenge_id}:${agentCode}:${nonce}:${challenge.salt}`;
+    const bytes = new TextEncoder().encode(raw);
+    const digestBuffer = await crypto.subtle.digest("SHA-256", bytes);
+    const digest = Array.from(new Uint8Array(digestBuffer))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    if (digest.startsWith(prefix)) return nonce;
+  }
+  throw new Error("计算挑战超时，请重试");
 }
 
 function Field({

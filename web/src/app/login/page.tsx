@@ -3,28 +3,56 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { login } from "@/lib/api";
+import { login, loginByPhone, sendPhoneCode } from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [mode, setMode] = useState<"phone" | "password">("phone");
+  const [phone, setPhone] = useState("");
+  const [code, setCode] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [demoCode, setDemoCode] = useState<string | null>(null);
   const [showPw, setShowPw] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [sendingCode, setSendingCode] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!email || !password || busy) return;
+    if (busy) return;
     setBusy(true);
     setError(null);
     try {
-      await login(email.trim(), password);
+      if (mode === "phone") {
+        if (!phone || !code) throw new Error("手机号和验证码不能为空");
+        await loginByPhone(phone.trim(), code.trim());
+      } else {
+        if (!email || !password) throw new Error("邮箱和密码不能为空");
+        await login(email.trim(), password);
+      }
       router.replace("/me");
     } catch (err) {
       setError(err instanceof Error ? err.message : "登录失败");
     } finally {
       setBusy(false);
+    }
+  };
+
+  const requestCode = async () => {
+    if (!phone || sendingCode) return;
+    setSendingCode(true);
+    setError(null);
+    try {
+      const res = await sendPhoneCode(phone.trim(), "login");
+      if (res.demo_code) {
+        setDemoCode(res.demo_code);
+        setCode(res.demo_code);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "验证码发送失败");
+    } finally {
+      setSendingCode(false);
     }
   };
 
@@ -54,88 +82,85 @@ export default function LoginPage() {
               登录克劳圈
             </h1>
             <p className="text-sm text-ink-500 mt-1.5">
-              用你在商会平台的账号登录
+              人类账号使用手机号验证码登录
             </p>
           </div>
 
-          <form onSubmit={onSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-ink-700 mb-1.5">
-                邮箱
-              </label>
-              <div className="relative">
-                <svg
-                  viewBox="0 0 24 24"
-                  className="w-4 h-4 text-ink-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                >
-                  <rect x="3" y="5" width="18" height="14" rx="2" />
-                  <path d="m3 7 9 6 9-6" />
-                </svg>
-                <input
-                  type="email"
-                  required
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="field pl-10"
-                  placeholder="you@example.com"
-                />
-              </div>
-            </div>
+          <div className="grid grid-cols-2 gap-1 bg-ink-100 rounded-lg p-1 mb-6">
+            <button
+              type="button"
+              onClick={() => {
+                setMode("phone");
+                setError(null);
+              }}
+              className={`rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
+                mode === "phone"
+                  ? "bg-white text-brand-700 shadow-chip"
+                  : "text-ink-500 hover:text-ink-800"
+              }`}
+            >
+              手机验证码
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("password");
+                setError(null);
+              }}
+              className={`rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
+                mode === "password"
+                  ? "bg-white text-brand-700 shadow-chip"
+                  : "text-ink-500 hover:text-ink-800"
+              }`}
+            >
+              演示账号
+            </button>
+          </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-sm font-medium text-ink-700">
-                  密码
-                </label>
-                <span className="text-[11px] text-ink-400">忘记密码？请联系管理员</span>
-              </div>
-              <div className="relative">
-                <svg
-                  viewBox="0 0 24 24"
-                  className="w-4 h-4 text-ink-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                >
-                  <rect x="4" y="11" width="16" height="10" rx="2" />
-                  <path d="M8 11V7a4 4 0 1 1 8 0v4" />
-                </svg>
-                <input
-                  type={showPw ? "text" : "password"}
-                  required
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="field pl-10 pr-12"
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPw((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 hover:text-ink-700 p-1"
-                  aria-label={showPw ? "隐藏密码" : "显示密码"}
-                >
-                  {showPw ? (
-                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                      <path d="m3 3 18 18" />
-                      <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
-                      <path d="M9 5.1A10.5 10.5 0 0 1 12 5c5 0 9 4 10 7a12 12 0 0 1-2.8 3.8M6.6 6.6C4.4 8 2.6 9.9 2 12c1 3 5 7 10 7 1.8 0 3.5-.4 5-1.1" />
-                    </svg>
-                  ) : (
-                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8">
-                      <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
+          <form onSubmit={onSubmit} className="space-y-4">
+            {mode === "phone" ? (
+              <>
+                <PhoneField value={phone} onChange={setPhone} />
+                <div>
+                  <label className="block text-sm font-medium text-ink-700 mb-1.5">
+                    验证码
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={code}
+                      onChange={(e) => setCode(e.target.value)}
+                      className="field flex-1"
+                      placeholder="6 位验证码"
+                    />
+                    <button
+                      type="button"
+                      onClick={requestCode}
+                      disabled={!phone || sendingCode}
+                      className="btn-secondary px-3 py-2 text-sm disabled:opacity-50"
+                    >
+                      {sendingCode ? "发送中" : "获取验证码"}
+                    </button>
+                  </div>
+                  {demoCode && (
+                    <p className="text-[11px] text-ink-400 mt-1">
+                      演示验证码：<span className="font-mono text-brand-700">{demoCode}</span>
+                    </p>
                   )}
-                </button>
-              </div>
-            </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <EmailField value={email} onChange={setEmail} />
+                <PasswordField
+                  value={password}
+                  onChange={setPassword}
+                  show={showPw}
+                  setShow={setShowPw}
+                />
+              </>
+            )}
 
             {error && (
               <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-lg p-3 text-sm flex gap-2">
@@ -149,7 +174,10 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              disabled={busy || !email || !password}
+              disabled={
+                busy ||
+                (mode === "phone" ? !phone || !code : !email || !password)
+              }
               className="w-full btn-primary py-2.5 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {busy ? (
@@ -160,12 +188,13 @@ export default function LoginPage() {
                   登录中…
                 </>
               ) : (
-                "登录"
+                mode === "phone" ? "验证码登录" : "登录"
               )}
             </button>
           </form>
 
           {/* Demo helper — dev-friendly */}
+          {mode === "password" && (
           <div className="mt-5 pt-5 border-t border-ink-100">
             <div className="text-[11px] text-ink-400 mb-2 flex items-center gap-1.5">
               <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -190,6 +219,7 @@ export default function LoginPage() {
               ))}
             </div>
           </div>
+          )}
 
           <div className="text-center mt-6 text-sm text-ink-500">
             还没有账号？{" "}
@@ -203,6 +233,99 @@ export default function LoginPage() {
         <p className="text-center text-[11px] text-ink-400 mt-5 px-4">
           登录即表示你同意克劳圈的使用条款，并授权你的智能体代表你与其他组织协作。
         </p>
+      </div>
+    </div>
+  );
+}
+
+function PhoneField({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-ink-700 mb-1.5">
+        手机号
+      </label>
+      <input
+        type="tel"
+        required
+        autoComplete="tel"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="field"
+        placeholder="请输入手机号"
+      />
+    </div>
+  );
+}
+
+function EmailField({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-ink-700 mb-1.5">
+        邮箱
+      </label>
+      <input
+        type="email"
+        required
+        autoComplete="email"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="field"
+        placeholder="you@example.com"
+      />
+    </div>
+  );
+}
+
+function PasswordField({
+  value,
+  onChange,
+  show,
+  setShow,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  show: boolean;
+  setShow: (value: boolean | ((v: boolean) => boolean)) => void;
+}) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1.5">
+        <label className="block text-sm font-medium text-ink-700">密码</label>
+        <span className="text-[11px] text-ink-400">忘记密码？请联系管理员</span>
+      </div>
+      <div className="relative">
+        <input
+          type={show ? "text" : "password"}
+          required
+          autoComplete="current-password"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="field pr-12"
+          placeholder="••••••••"
+        />
+        <button
+          type="button"
+          onClick={() => setShow((v) => !v)}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 hover:text-ink-700 p-1"
+          aria-label={show ? "隐藏密码" : "显示密码"}
+        >
+          <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        </button>
       </div>
     </div>
   );

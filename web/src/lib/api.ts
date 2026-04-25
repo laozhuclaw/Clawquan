@@ -80,9 +80,18 @@ export interface Member {
 export interface AuthedUser {
   id: string;
   email: string;
+  phone?: string | null;
   username?: string | null;
   identity_type?: "HUMAN";
   is_human?: true;
+}
+
+export interface AgentRegistrationChallenge {
+  challenge_id: string;
+  salt: string;
+  difficulty: number;
+  expires_in: number;
+  algorithm: string;
 }
 
 // ---------- Token helpers (client-side only) -----------------------
@@ -157,6 +166,9 @@ export function autoRegisterAgent(params: {
   api_endpoint?: string;
   organization_id?: string;
   is_public?: boolean;
+  agent_code: string;
+  challenge_id: string;
+  nonce: string;
 }): Promise<{ message: string; created: boolean; agent: Agent }> {
   const qs = new URLSearchParams({ name: params.name });
   if (params.description) qs.set("description", params.description);
@@ -166,7 +178,22 @@ export function autoRegisterAgent(params: {
   if (params.api_endpoint) qs.set("api_endpoint", params.api_endpoint);
   if (params.organization_id) qs.set("organization_id", params.organization_id);
   if (params.is_public != null) qs.set("is_public", String(params.is_public));
-  return request(`/api/agents/auto-register?${qs}`, { method: "POST" });
+  qs.set("agent_code", params.agent_code);
+  qs.set("challenge_id", params.challenge_id);
+  qs.set("nonce", params.nonce);
+  return request(`/api/agents/auto-register?${qs}`, {
+    method: "POST",
+    auth: true,
+  });
+}
+
+export function createAgentRegistrationChallenge(
+  agent_code: string
+): Promise<AgentRegistrationChallenge> {
+  const qs = new URLSearchParams({ agent_code });
+  return request(`/api/agents/registration-challenge?${qs}`, {
+    method: "POST",
+  });
 }
 
 // ---------- Organizations -----------------------------------------
@@ -240,6 +267,37 @@ export async function register(
   return request(`/api/auth/register?${qs}`, { method: "POST" });
 }
 
+export function sendPhoneCode(
+  phone: string,
+  purpose: "login" | "register" = "login"
+): Promise<{
+  message: string;
+  phone: string;
+  purpose: string;
+  expires_in: number;
+  demo_code?: string;
+}> {
+  const qs = new URLSearchParams({ phone, purpose });
+  return request(`/api/auth/send-code?${qs}`, { method: "POST" });
+}
+
+export async function registerByPhone(
+  phone: string,
+  code: string,
+  username?: string
+): Promise<{ message: string; user: AuthedUser; access_token?: string; token_type?: string }> {
+  const qs = new URLSearchParams({ phone, code });
+  if (username) qs.set("username", username);
+  const data = await request<{
+    message: string;
+    user: AuthedUser;
+    access_token?: string;
+    token_type?: string;
+  }>(`/api/auth/register?${qs}`, { method: "POST" });
+  if (data.access_token) setToken(data.access_token);
+  return data;
+}
+
 /**
  * Login via POST /api/auth/login — form-urlencoded (OAuth2PasswordRequestForm).
  * Returns the JWT and stores it.
@@ -266,6 +324,19 @@ export async function login(
     throw new Error(detail || `登录失败 (${res.status})`);
   }
   const data = await res.json();
+  setToken(data.access_token);
+  return data;
+}
+
+export async function loginByPhone(
+  phone: string,
+  code: string
+): Promise<{ access_token: string; token_type: string; user: AuthedUser }> {
+  const qs = new URLSearchParams({ phone, code });
+  const data = await request<{ access_token: string; token_type: string; user: AuthedUser }>(
+    `/api/auth/login-code?${qs}`,
+    { method: "POST" }
+  );
   setToken(data.access_token);
   return data;
 }

@@ -4,13 +4,23 @@ Agent Routes - CRUD operations for AI Agents
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
+import hashlib
+import os
+import secrets
+import time
 import uuid
 
-from ..models import Agent, Organization, User
+from ..models import Agent, Organization, OrganizationMembership, User, MemberRole
 from ..database import get_db
 from ..routes.auth import get_current_user
 
 router = APIRouter(prefix="/api/agents", tags=["Agents"])
+
+AGENT_REGISTRATION_CODE = os.getenv("AGENT_REGISTRATION_CODE", "clawquan-agent-demo")
+AGENT_CHALLENGE_TTL_SECONDS = 2 * 60
+AGENT_CHALLENGE_DIFFICULTY = int(os.getenv("AGENT_CHALLENGE_DIFFICULTY", "4"))
+
+_agent_challenges: dict[str, dict] = {}
 
 
 def _agent_to_dict(agent: Agent) -> dict:
@@ -38,6 +48,60 @@ def _split_tags(tags: Optional[str]) -> list[str]:
     if not tags:
         return []
     return [t.strip() for t in tags.split(",") if t.strip()]
+
+
+def _require_agent_code(agent_code: str) -> None:
+    if not agent_code or not secrets.compare_digest(agent_code, AGENT_REGISTRATION_CODE):
+        raise HTTPException(status_code=403, detail="Invalid agent registration code")
+
+
+def _challenge_digest(challenge_id: str, agent_code: str, nonce: str, salt: str) -> str:
+    raw = f"{challenge_id}:{agent_code}:{nonce}:{salt}".encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def _verify_agent_challenge(challenge_id: str, agent_code: str, nonce: str) -> None:
+    challenge = _agent_challenges.get(challenge_id)
+    if not challenge:
+        raise HTTPException(status_code=400, detail="Agent challenge not found or expired")
+    if challenge.get("used"):
+        raise HTTPException(status_code=400, detail="Agent challenge already used")
+    if time.time() > challenge["expires_at"]:
+        _agent_challenges.pop(challenge_id, None)
+        raise HTTPException(status_code=400, detail="Agent challenge expired")
+
+    digest = _challenge_digest(challenge_id, agent_code, nonce or "", challenge["salt"])
+    if not digest.startswith("0" * challenge["difficulty"]):
+        raise HTTPException(status_code=400, detail="Invalid agent challenge result")
+    challenge["used"] = True
+
+
+@router.post("/registration-challenge")
+async def create_agent_registration_challenge(agent_code: str):
+    """
+    Issue a short-lived proof-of-work challenge for Agent registration.
+
+    The caller must know the registration code and then quickly compute a nonce
+    whose SHA-256 digest starts with N zeroes. This does not make the identity
+    autonomous by itself; it raises the cost of scripted/manual spoofing and is
+    combined with the logged-in human/organization responsibility check below.
+    """
+    _require_agent_code(agent_code)
+    challenge_id = str(uuid.uuid4())
+    salt = secrets.token_hex(12)
+    _agent_challenges[challenge_id] = {
+        "salt": salt,
+        "difficulty": AGENT_CHALLENGE_DIFFICULTY,
+        "expires_at": time.time() + AGENT_CHALLENGE_TTL_SECONDS,
+        "used": False,
+    }
+    return {
+        "challenge_id": challenge_id,
+        "salt": salt,
+        "difficulty": AGENT_CHALLENGE_DIFFICULTY,
+        "expires_in": AGENT_CHALLENGE_TTL_SECONDS,
+        "algorithm": "sha256(challenge_id + ':' + agent_code + ':' + nonce + ':' + salt)",
+    }
 
 
 @router.get("/", response_model=List[dict])
@@ -82,6 +146,10 @@ async def auto_register_agent(
     api_endpoint: Optional[str] = None,
     organization_id: Optional[str] = None,
     is_public: bool = True,
+    agent_code: str = "",
+    challenge_id: str = "",
+    nonce: str = "",
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -89,25 +157,53 @@ async def auto_register_agent(
 
     这个入口不会创建 User, 也不会签发人类登录 token。它只创建/复用
     agents 表里的智能体身份, 并在返回值里明确标记 identity_type=AGENT。
+
+    为防止人类匿名伪装成智能体, 注册必须由已登录的人类账号发起:
+      - 个人智能体绑定 owner_id = current_user.id
+      - 组织智能体必须由该组织 OWNER / ADMIN 发起
+      - 调用方必须持有 agent registration code 并完成短时计算挑战
     """
+    _require_agent_code(agent_code)
+    _verify_agent_challenge(challenge_id, agent_code, nonce)
+
     org = None
     if organization_id:
         org = db.query(Organization).filter(Organization.id == organization_id).first()
         if not org:
             raise HTTPException(status_code=404, detail="Organization not found")
+        membership = (
+            db.query(OrganizationMembership)
+            .filter(
+                OrganizationMembership.organization_id == organization_id,
+                OrganizationMembership.user_id == current_user.id,
+            )
+            .first()
+        )
+        if not membership or membership.role not in (MemberRole.OWNER, MemberRole.ADMIN):
+            raise HTTPException(
+                status_code=403,
+                detail="Only organization owners or admins can register organization agents",
+            )
 
     existing = None
     if api_endpoint:
         existing = db.query(Agent).filter(Agent.api_endpoint == api_endpoint).first()
+        if existing and organization_id and existing.organization_id != organization_id:
+            raise HTTPException(status_code=409, detail="API endpoint already registered")
+        if existing and not organization_id and existing.owner_id != current_user.id:
+            raise HTTPException(status_code=409, detail="API endpoint already registered")
     if not existing:
-        query = db.query(Agent).filter(
-            Agent.name == name,
-            Agent.owner_id.is_(None),
-        )
         if organization_id:
-            query = query.filter(Agent.organization_id == organization_id)
+            query = db.query(Agent).filter(
+                Agent.name == name,
+                Agent.organization_id == organization_id,
+            )
         else:
-            query = query.filter(Agent.organization_id.is_(None))
+            query = db.query(Agent).filter(
+                Agent.name == name,
+                Agent.owner_id == current_user.id,
+                Agent.organization_id.is_(None),
+            )
         existing = query.first()
 
     if existing:
@@ -126,7 +222,7 @@ async def auto_register_agent(
         tags=_split_tags(tags),
         api_endpoint=api_endpoint,
         organization_id=organization_id,
-        owner_id=None,
+        owner_id=None if organization_id else current_user.id,
         is_public=is_public,
     )
     db.add(agent)
