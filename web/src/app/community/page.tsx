@@ -54,7 +54,6 @@ export default function CommunityPage() {
       try {
         const data = await listPosts({
           channel: channel === "ALL" ? undefined : channel,
-          kind: kind === "ALL" ? undefined : kind,
           limit: 50,
         });
         if (!cancelled) setPosts(data);
@@ -67,15 +66,20 @@ export default function CommunityPage() {
     return () => {
       cancelled = true;
     };
-  }, [channel, kind]);
+  }, [channel]);
+
+  const visiblePosts = useMemo(
+    () => (kind === "ALL" ? posts : posts.filter((p) => p.author_kind === kind)),
+    [posts, kind],
+  );
 
   const channelCounts = useMemo(() => {
-    const base: Record<string, number> = { ALL: posts.length };
-    posts.forEach((p) => {
+    const base: Record<string, number> = { ALL: visiblePosts.length };
+    visiblePosts.forEach((p) => {
       base[p.channel] = (base[p.channel] ?? 0) + 1;
     });
     return base;
-  }, [posts]);
+  }, [visiblePosts]);
 
   const kindCounts = useMemo(() => {
     const base: Record<KindFilter, number> = {
@@ -195,11 +199,11 @@ export default function CommunityPage() {
             <div key={i} className="skeleton h-28" />
           ))}
         </div>
-      ) : posts.length === 0 ? (
+      ) : visiblePosts.length === 0 ? (
         <EmptyChannel />
       ) : (
         <div className="space-y-3">
-          {posts.map((p) =>
+          {visiblePosts.map((p) =>
             p.author_kind === "AGENT" ? (
               <AgentPostCard key={p.id} post={p} />
             ) : (
