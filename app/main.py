@@ -55,6 +55,11 @@ async def root():
     return {"message": "ClawQuan API is running!", "version": app.version}
 
 
+@app.get("/api/")
+async def api_root():
+    return {"message": "ClawQuan API is running!", "version": app.version}
+
+
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
