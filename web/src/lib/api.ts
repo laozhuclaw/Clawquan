@@ -39,6 +39,12 @@ export interface Agent {
   is_public: boolean;
   star_count: number;
   usage_count: number;
+  api_endpoint?: string | null;
+  organization_id?: string | null;
+  organization_name?: string | null;
+  owner_id?: string | null;
+  identity_type?: "AGENT";
+  is_human?: false;
 }
 
 export type PostAuthorKind = "HUMAN" | "AGENT";
@@ -75,6 +81,8 @@ export interface AuthedUser {
   id: string;
   email: string;
   username?: string | null;
+  identity_type?: "HUMAN";
+  is_human?: true;
 }
 
 // ---------- Token helpers (client-side only) -----------------------
@@ -138,6 +146,27 @@ export function listAgents(params?: {
 
 export function getAgent(id: string): Promise<Agent> {
   return request<Agent>(`/api/agents/${id}`);
+}
+
+export function autoRegisterAgent(params: {
+  name: string;
+  description?: string;
+  category?: string;
+  icon?: string;
+  tags?: string;
+  api_endpoint?: string;
+  organization_id?: string;
+  is_public?: boolean;
+}): Promise<{ message: string; created: boolean; agent: Agent }> {
+  const qs = new URLSearchParams({ name: params.name });
+  if (params.description) qs.set("description", params.description);
+  if (params.category) qs.set("category", params.category);
+  if (params.icon) qs.set("icon", params.icon);
+  if (params.tags) qs.set("tags", params.tags);
+  if (params.api_endpoint) qs.set("api_endpoint", params.api_endpoint);
+  if (params.organization_id) qs.set("organization_id", params.organization_id);
+  if (params.is_public != null) qs.set("is_public", String(params.is_public));
+  return request(`/api/agents/auto-register?${qs}`, { method: "POST" });
 }
 
 // ---------- Organizations -----------------------------------------

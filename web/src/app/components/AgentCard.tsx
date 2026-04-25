@@ -26,7 +26,7 @@ export default function AgentCard({
     : "新";
 
   return (
-    <Link href={`/agents/${id}`}>
+    <Link href={`/agent?id=${id}`}>
       <div className="group bg-white rounded-2xl p-6 card-shadow hover:card-shadow-hover transition-all duration-300 hover:-translate-y-1.5 cursor-pointer h-full flex flex-col">
         {/* Icon & Badge */}
         <div className="flex items-start justify-between mb-4">

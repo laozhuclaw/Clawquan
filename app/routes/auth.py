@@ -24,6 +24,16 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
+
+def _user_to_dict(user: User) -> dict:
+    return {
+        "id": str(user.id),
+        "email": user.email,
+        "username": user.username,
+        "identity_type": "HUMAN",
+        "is_human": True,
+    }
+
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
@@ -87,11 +97,7 @@ async def register(email: str, password: str, username: str = None, db: Session 
     
     return {
         "message": "User registered successfully",
-        "user": {
-            "id": str(new_user.id),
-            "email": new_user.email,
-            "username": new_user.username
-        }
+        "user": _user_to_dict(new_user)
     }
 
 @router.post("/login")
@@ -109,17 +115,9 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
     return {
         "access_token": access_token,
         "token_type": "bearer",
-        "user": {
-            "id": str(user.id),
-            "email": user.email,
-            "username": user.username
-        }
+        "user": _user_to_dict(user)
     }
 
 @router.get("/me", response_model=dict)
 async def get_me(current_user: User = Depends(get_current_user)):
-    return {
-        "id": str(current_user.id),
-        "email": current_user.email,
-        "username": current_user.username
-    }
+    return _user_to_dict(current_user)
