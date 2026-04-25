@@ -1,27 +1,73 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getOrgTree, type Organization, ORG_TYPE_LABEL } from "@/lib/api";
+
+const COLLAPSE_THRESHOLD = 3;
 
 export default function OrgTreePreview() {
   const [tree, setTree] = useState<Organization[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
         const data = await getOrgTree();
-        if (!cancelled) setTree(data);
+        if (cancelled) return;
+        setTree(data);
+
+        const def = new Set<string>();
+        const walk = (node: Organization) => {
+          if (node.type === "GRAND_CHAMBER") def.add(node.id);
+          if (
+            node.type === "CHAMBER" &&
+            (node.children?.length ?? 0) <= COLLAPSE_THRESHOLD
+          ) {
+            def.add(node.id);
+          }
+          node.children?.forEach(walk);
+        };
+        data.forEach(walk);
+        setExpanded(def);
       } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err.message : "加载失败");
+        if (!cancelled)
+          setError(err instanceof Error ? err.message : "加载失败");
       }
     })();
     return () => {
       cancelled = true;
     };
   }, []);
+
+  const collapsibleIds = useMemo(() => {
+    const ids: string[] = [];
+    const walk = (n: Organization) => {
+      if (n.children && n.children.length > 0) ids.push(n.id);
+      n.children?.forEach(walk);
+    };
+    tree?.forEach(walk);
+    return ids;
+  }, [tree]);
+
+  const allExpanded =
+    collapsibleIds.length > 0 &&
+    collapsibleIds.every((id) => expanded.has(id));
+
+  function toggle(id: string) {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleAll() {
+    setExpanded(allExpanded ? new Set() : new Set(collapsibleIds));
+  }
 
   return (
     <section className="px-4 lg:px-6 pt-10 lg:pt-16 pb-6 max-w-5xl mx-auto">
@@ -69,17 +115,52 @@ export default function OrgTreePreview() {
         </p>
       )}
 
+      {tree && tree.length > 0 && collapsibleIds.length > 0 && (
+        <div className="flex items-center justify-end mb-3">
+          <button
+            type="button"
+            onClick={toggleAll}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-500
+                       hover:text-brand-700 transition-colors px-2.5 py-1.5 rounded-md
+                       hover:bg-brand-50 border border-transparent hover:border-brand-100"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className="w-3.5 h-3.5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              {allExpanded ? (
+                <path d="M5 12h14" />
+              ) : (
+                <>
+                  <path d="M12 5v14" />
+                  <path d="M5 12h14" />
+                </>
+              )}
+            </svg>
+            {allExpanded ? "全部收起" : "全部展开"}
+          </button>
+        </div>
+      )}
+
       <div className="space-y-3">
         {tree?.map((grand) => (
-          <OrgNode key={grand.id} org={grand} depth={0} isLast={false} />
+          <OrgNode
+            key={grand.id}
+            org={grand}
+            depth={0}
+            expanded={expanded}
+            onToggle={toggle}
+          />
         ))}
       </div>
 
       <div className="mt-5 sm:hidden">
-        <Link
-          href="/organizations"
-          className="btn-secondary w-full"
-        >
+        <Link href="/organizations" className="btn-secondary w-full">
           查看全部组织
         </Link>
       </div>
@@ -90,12 +171,17 @@ export default function OrgTreePreview() {
 function OrgNode({
   org,
   depth,
-  isLast,
+  expanded,
+  onToggle,
 }: {
   org: Organization;
   depth: number;
-  isLast: boolean;
+  expanded: Set<string>;
+  onToggle: (id: string) => void;
 }) {
+  const hasChildren = !!(org.children && org.children.length > 0);
+  const isOpen = expanded.has(org.id);
+
   const typeAccent =
     org.type === "GRAND_CHAMBER"
       ? "border-l-[3px] border-brand-700"
@@ -105,7 +191,6 @@ function OrgNode({
 
   return (
     <div className={depth === 0 ? "" : "relative"}>
-      {/* Tree connector line on left */}
       {depth > 0 && (
         <>
           <span
@@ -128,7 +213,6 @@ function OrgNode({
                     transition-all ${typeAccent}`}
         style={{ marginLeft: depth * 24 }}
       >
-        {/* Type badge */}
         <div
           className={`shrink-0 w-10 h-10 rounded-lg flex items-center justify-center
                       ${
@@ -142,14 +226,16 @@ function OrgNode({
           <OrgIcon type={org.type} />
         </div>
 
-        {/* Main */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-semibold text-ink-900 truncate">
               {org.name}
             </span>
-            {org.is_verified && (
-              <span className="chip chip-brand">✓ 认证</span>
+            {org.is_verified && <span className="chip chip-brand">✓ 认证</span>}
+            {hasChildren && !isOpen && (
+              <span className="chip bg-ink-50 text-ink-500 border border-ink-100">
+                +{org.children!.length} {childCountLabel(org)}
+              </span>
             )}
           </div>
           <div className="text-[12px] text-ink-500 flex flex-wrap gap-x-3 gap-y-0.5 mt-0.5 tabular-nums">
@@ -177,25 +263,72 @@ function OrgNode({
           </div>
         </div>
 
-        <svg viewBox="0 0 24 24" className="w-5 h-5 text-ink-300 group-hover:text-brand-700 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-          <path d="M9 6l6 6-6 6" />
-        </svg>
+        {hasChildren ? (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onToggle(org.id);
+            }}
+            aria-label={isOpen ? "收起下级" : "展开下级"}
+            aria-expanded={isOpen}
+            className="shrink-0 inline-flex items-center gap-1 px-2 py-1.5 rounded-md
+                       text-ink-500 hover:text-brand-700 hover:bg-brand-50
+                       border border-transparent hover:border-brand-100 transition-colors"
+          >
+            <span className="text-[11px] font-semibold tabular-nums">
+              {org.children!.length}
+            </span>
+            <svg
+              viewBox="0 0 24 24"
+              className={`w-4 h-4 transition-transform duration-200 ${
+                isOpen ? "rotate-90" : ""
+              }`}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M9 6l6 6-6 6" />
+            </svg>
+          </button>
+        ) : (
+          <svg
+            viewBox="0 0 24 24"
+            className="w-5 h-5 text-ink-300 group-hover:text-brand-700 shrink-0 mr-1"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          >
+            <path d="M9 6l6 6-6 6" />
+          </svg>
+        )}
       </Link>
 
-      {org.children && org.children.length > 0 && (
+      {hasChildren && isOpen && (
         <div className="mt-2.5 space-y-2.5">
-          {org.children.map((c, i) => (
+          {org.children!.map((c) => (
             <OrgNode
               key={c.id}
               org={c}
               depth={depth + 1}
-              isLast={i === (org.children?.length || 0) - 1}
+              expanded={expanded}
+              onToggle={onToggle}
             />
           ))}
         </div>
       )}
     </div>
   );
+}
+
+function childCountLabel(org: Organization): string {
+  if (org.type === "GRAND_CHAMBER") return "家商会";
+  if (org.type === "CHAMBER") return "家企业";
+  return "项";
 }
 
 function OrgIcon({ type }: { type: Organization["type"] }) {
