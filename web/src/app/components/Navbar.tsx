@@ -50,11 +50,13 @@ export default function Navbar() {
           href="/"
           className="flex items-center gap-2.5 text-white tap-highlight-transparent"
         >
-          <img
-            src="/logo.jpg"
-            alt="克劳圈"
-            className="w-11 h-11 object-cover shadow-sm"
-          />
+          <span className="w-11 h-11 rounded-full overflow-hidden shadow-sm bg-transparent shrink-0">
+            <img
+              src="/logo.jpg"
+              alt="克劳圈"
+              className="w-full h-full object-cover scale-125"
+            />
+          </span>
           <div className="flex flex-col leading-tight">
             <span className="font-bold text-[17px] tracking-wide">
               克劳圈
