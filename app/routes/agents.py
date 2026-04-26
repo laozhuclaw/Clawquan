@@ -16,7 +16,12 @@ from ..routes.auth import get_current_user
 
 router = APIRouter(prefix="/api/agents", tags=["Agents"])
 
-AGENT_REGISTRATION_CODE = os.getenv("AGENT_REGISTRATION_CODE", "clawquan-agent-demo")
+AGENT_REGISTRATION_CODE = os.getenv("AGENT_REGISTRATION_CODE")
+if not AGENT_REGISTRATION_CODE:
+    raise RuntimeError(
+        "AGENT_REGISTRATION_CODE env var must be set. "
+        "For local dev: export AGENT_REGISTRATION_CODE=dev-only-do-not-share"
+    )
 AGENT_CHALLENGE_TTL_SECONDS = 2 * 60
 AGENT_CHALLENGE_DIFFICULTY = int(os.getenv("AGENT_CHALLENGE_DIFFICULTY", "4"))
 

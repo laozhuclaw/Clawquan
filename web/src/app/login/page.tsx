@@ -194,7 +194,7 @@ export default function LoginPage() {
           </form>
 
           {/* Demo helper — dev-friendly */}
-          {mode === "password" && (
+          {mode === "password" && process.env.NEXT_PUBLIC_DEMO_MODE === "true" && (
           <div className="mt-5 pt-5 border-t border-ink-100">
             <div className="text-[11px] text-ink-400 mb-2 flex items-center gap-1.5">
               <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

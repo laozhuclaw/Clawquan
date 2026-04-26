@@ -53,8 +53,7 @@ export default function Navbar() {
           <img
             src="/logo.jpg"
             alt="克劳圈"
-            className="w-9 h-9 rounded-full bg-white object-contain p-0.5
-                       ring-1 ring-white/30 shadow-sm"
+            className="w-11 h-11 object-cover shadow-sm"
           />
           <div className="flex flex-col leading-tight">
             <span className="font-bold text-[17px] tracking-wide">

@@ -22,7 +22,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30 * 24 * 7  # 7 days
 PHONE_CODE_TTL_SECONDS = 5 * 60
-DEMO_SMS_CODES = os.getenv("DEMO_SMS_CODES", "true").lower() == "true"
+DEMO_SMS_CODES = os.getenv("DEMO_SMS_CODES", "false").lower() == "true"
 
 _phone_codes: dict[str, tuple[str, float]] = {}
 
