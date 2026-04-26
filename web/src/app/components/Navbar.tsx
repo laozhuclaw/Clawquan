@@ -50,11 +50,11 @@ export default function Navbar() {
           href="/"
           className="flex items-center gap-2.5 text-white tap-highlight-transparent"
         >
-          <span className="w-11 h-11 rounded-full overflow-hidden shadow-sm bg-transparent shrink-0">
+          <span className="w-10 h-10 sm:w-11 sm:h-11 rounded-full overflow-hidden shadow-sm bg-transparent shrink-0">
             <img
-              src="/logo.jpg"
+              src="/logo-nav.png"
               alt="克劳圈"
-              className="w-full h-full object-cover scale-125"
+              className="w-full h-full object-cover"
             />
           </span>
           <div className="flex flex-col leading-tight">
