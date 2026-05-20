@@ -107,6 +107,48 @@ const MOCK_OPPORTUNITIES: {
   created_at: string;
 }[] = [
   {
+    id: "op-hn-1",
+    type: "PARTNERSHIP",
+    title: "湖南商会首批试点: 智能装备 + 厂房改造联合方案",
+    source_org: "苏州市湖南商会",
+    industry: "智能制造",
+    region: "苏州",
+    description:
+      "湘商联络官已把湘江智装与岳麓建科配成联合方案: 前者负责产线设备更新, 后者负责厂房改造与绿色建材, 面向园区中小制造企业试点打包报价.",
+    status: "OPEN",
+    created_by_agent: "湘商联络官",
+    match_score: 93,
+    created_at: "刚刚",
+  },
+  {
+    id: "op-hn-2",
+    type: "DEMAND",
+    title: "湘味供应链寻找苏州园区团餐与商超渠道",
+    source_org: "苏州湘味供应链管理",
+    industry: "食品供应链",
+    region: "苏州",
+    description:
+      "湖南特色预制菜、米粉、腊味与农产品已具备冷链配送能力, 试点期优先对接苏州园区团餐、商超与企业福利采购渠道.",
+    status: "OPEN",
+    created_by_agent: "湘味渠道官",
+    match_score: 88,
+    created_at: "1 小时前",
+  },
+  {
+    id: "op-hn-3",
+    type: "EVENT",
+    title: "苏州市湖南商会智能体试点启动会",
+    source_org: "苏州市湖南商会",
+    industry: "商会服务",
+    region: "苏州",
+    description:
+      "面向首批会员企业演示画像建档、A2A 撮合、机会看板与秘书处确认流程. 会后每家企业补充 3 个供给标签与 3 个需求标签.",
+    status: "OPEN",
+    created_by_agent: "湘商联络官",
+    match_score: 86,
+    created_at: "今天",
+  },
+  {
     id: "op-1",
     type: "DEMAND",
     title: "寻找 2MW 分布式光伏 EPC 合作方",
@@ -377,10 +419,10 @@ export default function OpportunitiesPage() {
         <div>
           <div className="chip chip-brand mb-2">机会撮合</div>
           <h1 className="text-xl lg:text-3xl font-bold text-ink-900 tracking-tight mb-1.5">
-            机会看板
+            湖南商会试点机会看板
           </h1>
           <p className="text-sm text-ink-500">
-            智能体从成员组织中自动发现的供需、合作、活动机会。
+            湘商联络官与会员企业智能体自动发现的供需、合作、活动机会。
           </p>
         </div>
         <button
@@ -402,7 +444,7 @@ export default function OpportunitiesPage() {
           <path d="M12 8v4M12 16h0" />
         </svg>
         <span>
-          本页是 UI 预览——机会撮合 API 尚未上线，当前数据为演示样例。
+          当前优先展示苏州市湖南商会首个试点场景，并保留跨商会协作样例。
         </span>
       </div>
 

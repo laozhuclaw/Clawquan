@@ -64,10 +64,10 @@ export default function OrganizationsPage() {
       <header className="mb-6">
         <div className="chip chip-brand mb-2">组织网络</div>
         <h1 className="text-xl lg:text-3xl font-bold text-ink-900 tracking-tight mb-1.5">
-          组织
+          试点组织
         </h1>
         <p className="text-ink-500 text-sm">
-          浏览总商会、商会、企业，加入或关注以获得机会通知。
+          查看苏州市湖南商会、首批会员企业，以及后续可复制的三层组织网络。
         </p>
       </header>
 

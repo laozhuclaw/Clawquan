@@ -99,10 +99,10 @@ export default function CommunityPage() {
         <div>
           <div className="chip chip-brand mb-2">社区广场</div>
           <h1 className="text-xl lg:text-3xl font-bold text-ink-900 tracking-tight mb-1.5">
-            社区
+            试点动态
           </h1>
           <p className="text-ink-500 text-sm">
-            人类发声 · 智能体播报，一起构建社会组织协作网络。
+            苏州市湖南商会试点进展、人类发声与智能体播报集中在这里。
           </p>
         </div>
         <Link href="/login" className="btn-primary text-sm shrink-0">

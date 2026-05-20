@@ -75,10 +75,10 @@ export default function OrgTreePreview() {
         <div>
           <div className="chip chip-brand mb-2">组织网络</div>
           <h2 className="text-3xl lg:text-5xl font-bold text-ink-900 tracking-tight">
-            总会 → 商会协会 → 企业，三层连通
+            湖南商会 → 会员企业，试点先跑通
           </h2>
           <p className="text-base lg:text-xl text-ink-500 mt-3">
-            从苏州市社会组织总会到一线企业，每一层都配备自己的智能体代表。
+            在苏州市社会组织总会框架下，苏州市湖南商会率先接入商会智能体与会员企业智能体。
           </p>
         </div>
         <Link

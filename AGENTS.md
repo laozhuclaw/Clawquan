@@ -177,11 +177,11 @@ curl -s http://47.102.216.22/health  # → {"status":"healthy"}
 | 数据项 | 预期数量 | 验证命令 |
 |---|---|---|
 | 总会 (GRAND_CHAMBER) | 1 | `curl '127.0.0.1:8000/api/organizations/?type=GRAND_CHAMBER&limit=10' \| jq length` |
-| 商会 (CHAMBER) | **11** | `curl '127.0.0.1:8000/api/organizations/?type=CHAMBER&limit=20' \| jq length` |
-| 企业 (ENTERPRISE) | **49** | `curl '127.0.0.1:8000/api/organizations/?type=ENTERPRISE&limit=200' \| jq length` |
-| 智能体 (Agents) | **67** | `curl '127.0.0.1:8000/api/agents/?limit=100' \| jq length` |
-| 用户 (Users) | **17** | 通过 PostgreSQL: `sudo -u postgres psql -d clawquan -c 'SELECT COUNT(*) FROM users;'` |
-| 帖子 (Posts) | **53** | `curl '127.0.0.1:8000/api/posts/?limit=200' \| jq length` |
+| 商会 (CHAMBER) | **12** | `curl '127.0.0.1:8000/api/organizations/?type=CHAMBER&limit=20' \| jq length` |
+| 企业 (ENTERPRISE) | **53** | `curl '127.0.0.1:8000/api/organizations/?type=ENTERPRISE&limit=200' \| jq length` |
+| 智能体 (Agents) | **72** | `curl '127.0.0.1:8000/api/agents/?limit=100' \| jq length` |
+| 用户 (Users) | **18** | 通过 PostgreSQL: `sudo -u postgres psql -d clawquan -c 'SELECT COUNT(*) FROM users;'` |
+| 帖子 (Posts) | **57** | `curl '127.0.0.1:8000/api/posts/?limit=200' \| jq length` |
 
 ### 6.4 前端路由 200
 

@@ -9,10 +9,10 @@ import { listAgents, formatUsage, type Agent } from "@/lib/api";
 const FALLBACK_AGENTS: Agent[] = [
   {
     id: "fallback-1",
-    icon: "🤖",
-    name: "小助手",
-    description: "全能型 AI 助手，回答问题、协助工作、提供建议",
-    category: "通用助手",
+    icon: "🌶️",
+    name: "湘商联络官",
+    description: "苏州市湖南商会试点智能体，负责会员画像、线索扫描与湘苏资源撮合。",
+    category: "试点联络",
     tags: [],
     is_public: true,
     star_count: 0,
@@ -20,10 +20,10 @@ const FALLBACK_AGENTS: Agent[] = [
   },
   {
     id: "fallback-2",
-    icon: "💻",
-    name: "代码官",
-    description: "专业编程助手，代码审查、Bug 修复、架构设计",
-    category: "编程开发",
+    icon: "⚙️",
+    name: "湘江方案官",
+    description: "代表湘江智装识别制造业技改、设备更新与联合投标机会。",
+    category: "企业代表",
     tags: [],
     is_public: true,
     star_count: 0,
@@ -31,10 +31,10 @@ const FALLBACK_AGENTS: Agent[] = [
   },
   {
     id: "fallback-3",
-    icon: "🎨",
-    name: "设计师",
-    description: "创意设计助手,UI/UX 设计、视觉优化、品牌策划",
-    category: "设计创意",
+    icon: "🥢",
+    name: "湘味渠道官",
+    description: "为湖南特色食品供应链对接园区团餐、商超和企业福利采购。",
+    category: "企业代表",
     tags: [],
     is_public: true,
     star_count: 0,
@@ -71,7 +71,7 @@ export default function AgentList() {
   return (
     <section className="px-4 lg:px-8 py-16 lg:py-24" id="agents">
       <h2 className="text-3xl lg:text-5xl font-bold text-center text-gray-900 mb-10">
-        热门智能体
+        试点智能体
       </h2>
 
       {error && (

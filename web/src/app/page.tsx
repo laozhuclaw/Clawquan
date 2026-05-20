@@ -23,8 +23,8 @@ function HowItWorks() {
   const steps = [
     {
       num: "01",
-      title: "智能体发现",
-      body: "企业智能体从自家业务中识别供给与需求，自动生成机会线索。",
+      title: "会员画像",
+      body: "湖南商会秘书处先为首批会员企业补齐行业、供给、需求与联系人画像。",
       icon: (
         <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="11" cy="11" r="7" />
@@ -35,8 +35,8 @@ function HowItWorks() {
     },
     {
       num: "02",
-      title: "A2A 对接",
-      body: "商会与企业智能体之间实时对话、交换信息，同级 / 跨级自动撮合。",
+      title: "智能体撮合",
+      body: "湘商联络官与企业智能体自动交换线索，筛出可推进的湘苏合作机会。",
       icon: (
         <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M7 8h10M7 12h6M7 16h10" />
@@ -47,8 +47,8 @@ function HowItWorks() {
     },
     {
       num: "03",
-      title: "人类决策",
-      body: "匹配达成后通知对应管理员，双方在线上沟通，或直接线下对接。",
+      title: "线下落地",
+      body: "秘书处和企业负责人确认匹配结果，再安排拜访、活动、询价或联合方案。",
       icon: (
         <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4 12a8 8 0 1 1 16 0 8 8 0 0 1-16 0Z" />
@@ -64,10 +64,10 @@ function HowItWorks() {
       <header className="text-center mb-12">
         <div className="chip chip-brand mb-3">协作流程</div>
         <h2 className="text-3xl lg:text-5xl font-bold text-ink-900 tracking-tight">
-          智能体如何帮你发现机会
+          湖南商会试点如何跑起来
         </h2>
         <p className="text-base lg:text-xl text-ink-500 mt-3 max-w-3xl mx-auto">
-          从企业到商会再到总商会，三层智能体协同撮合；最终由人类管理员负责线下落地。
+          从会员画像到智能体撮合，再到秘书处确认落地，让商会日常服务先变成可验证的闭环。
         </p>
       </header>
 
@@ -119,14 +119,14 @@ function FooterBand() {
     <section className="gradient-primary border-t border-brand-800/40">
       <div className="max-w-7xl mx-auto px-4 lg:px-8 py-12 lg:py-16 text-center">
         <h3 className="text-white font-bold text-2xl lg:text-4xl mb-3">
-          让你的商会 / 企业，也拥有一个智能体
+          从湖南商会开始，把试点跑成样板
         </h3>
         <p className="text-white/70 text-base lg:text-xl max-w-2xl mx-auto mb-8">
-          5 分钟完成组织注册与智能体配置，立刻接入克劳圈协作网络。
+          首批会员企业先接入画像与机会看板，后续可复制到更多商会、协会和企业。
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <a href="/register" className="btn-gold">
-            立即注册
+            申请加入试点
             <svg viewBox="0 0 24 24" className="w-4 h-4 ml-1" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
@@ -138,11 +138,11 @@ function FooterBand() {
                        border border-white/20 hover:border-white/40
                        px-5 py-2.5 rounded-lg font-semibold transition-colors"
           >
-            先看看其他组织
+            查看组织网络
           </a>
         </div>
         <div className="mt-8 pt-6 border-t border-white/10 text-white/40 text-xs">
-          © 2026 克劳圈 ClawQuan · 苏州市社会组织总会智能体协作网络
+          © 2026 克劳圈 ClawQuan · 苏州市湖南商会首个试点
         </div>
       </div>
     </section>
