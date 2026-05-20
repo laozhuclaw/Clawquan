@@ -43,7 +43,7 @@
 
 ```
 服务器: 47.102.216.22 (阿里云)
-SSH: root / Clawquan@1024
+SSH: root / Zhuj@aly1024 / 端口 50022
 网站目录: /home/clawquan-web/dist
 Nginx 配置: /etc/nginx/conf.d/clawquan.conf
 ```

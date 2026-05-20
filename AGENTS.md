@@ -10,10 +10,11 @@
 |---|---|
 | 服务商 | 阿里云 ECS |
 | 公网 IP | `47.102.216.22` |
+| SSH 端口 | `50022` |
 | SSH 用户名 | `root` |
-| SSH 密码 | `Clawquan@1024` |
+| SSH 密码 | `Zhuj@aly1024` |
 | 系统 | Alibaba Cloud Linux 3 (OpenAnolis Edition) |
-| 连接方式 | `sshpass -p 'Clawquan@1024' ssh -o StrictHostKeyChecking=no root@47.102.216.22` |
+| 连接方式 | `sshpass -p 'Zhuj@aly1024' ssh -p 50022 -o StrictHostKeyChecking=no root@47.102.216.22` |
 
 ---
 
@@ -107,7 +108,7 @@ chmod -R 755 /opt/clawquan/web/dist /opt/clawquan/app
 
 ```bash
 # 1. 连接服务器（在本地执行）
-sshpass -p 'Clawquan@1024' ssh -o StrictHostKeyChecking=no root@47.102.216.22
+sshpass -p 'Zhuj@aly1024' ssh -p 50022 -o StrictHostKeyChecking=no root@47.102.216.22
 
 # 2. 停止后端（避免文件占用）
 systemctl stop clawquan-api
