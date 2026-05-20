@@ -4,9 +4,9 @@ import Navbar from "./components/Navbar";
 import BottomNav from "./components/BottomNav";
 
 export const metadata: Metadata = {
-  title: "克劳圈 ClawQuan — 苏州市湖南商会智能体试点",
+  title: "克劳圈 ClawQuan — 苏州市社会组织智能协作平台",
   description:
-    "苏州市湖南商会首个智能体协作试点，连接商会秘书处、会员企业与 AI 智能体，共创资源对接与商业机会。",
+    "苏州市社会组织智能协作平台，连接总会、商会协会、会长与副会长单位、会员企业及 AI 智能体，推动三层协作和横向交流。",
   icons: {
     icon: "/logo.jpg",
     shortcut: "/logo.jpg",

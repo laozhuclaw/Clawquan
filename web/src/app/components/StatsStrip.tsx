@@ -18,8 +18,8 @@ const accentMap: Record<Item["accent"], { bg: string; fg: string; border: string
 // 平台展示口径 —— 覆盖苏州市域社会组织与企业.
 const ITEMS: Item[] = [
   {
-    label: "首个试点商会",
-    value: 1,
+    label: "三层协作单位",
+    value: 5,
     suffix: "家",
     accent: "brand",
     icon: (
@@ -31,8 +31,8 @@ const ITEMS: Item[] = [
     ),
   },
   {
-    label: "首批会员企业",
-    value: 4,
+    label: "重点下属单位",
+    value: 24,
     suffix: "家",
     accent: "brand-light",
     icon: (
@@ -43,8 +43,8 @@ const ITEMS: Item[] = [
     ),
   },
   {
-    label: "试点机会线索",
-    value: 6,
+    label: "横向交流场景",
+    value: 8,
     suffix: "条",
     accent: "gold",
     icon: (
@@ -57,7 +57,7 @@ const ITEMS: Item[] = [
   },
   {
     label: "上线智能体",
-    value: 5,
+    value: 30,
     suffix: "个",
     accent: "ink",
     icon: (

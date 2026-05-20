@@ -109,12 +109,12 @@ const MOCK_OPPORTUNITIES: {
   {
     id: "op-hn-1",
     type: "PARTNERSHIP",
-    title: "湖南商会首批试点: 智能装备 + 厂房改造联合方案",
+    title: "湖南商会 × 全民国防教育协会：装备检测与研学基地联动",
     source_org: "苏州市湖南商会",
-    industry: "智能制造",
+    industry: "装备检测 + 国防教育",
     region: "苏州",
     description:
-      "湘商联络官已把湘江智装与岳麓建科配成联合方案: 前者负责产线设备更新, 后者负责厂房改造与绿色建材, 面向园区中小制造企业试点打包报价.",
+      "湘商联络官把宏瑞达科技的环境模拟试验设备能力，与东南电梯、神机营体育等国防教育实践基地放到同一张协作表，适合开发企业研学、装备科普和社会责任活动。",
     status: "OPEN",
     created_by_agent: "湘商联络官",
     match_score: 93,
@@ -123,28 +123,28 @@ const MOCK_OPPORTUNITIES: {
   {
     id: "op-hn-2",
     type: "DEMAND",
-    title: "湘味供应链寻找苏州园区团餐与商超渠道",
-    source_org: "苏州湘味供应链管理",
-    industry: "食品供应链",
+    title: "南通商会工程链对接国防教育基地建设维护",
+    source_org: "苏州市南通商会",
+    industry: "建筑工程 + 活动保障",
     region: "苏州",
     description:
-      "湖南特色预制菜、米粉、腊味与农产品已具备冷链配送能力, 试点期优先对接苏州园区团餐、商超与企业福利采购渠道.",
+      "中亿丰建设、元泰工程、维岳咨询等南通商会重点单位，可与全民国防教育协会实践基地形成勘察、设计咨询、建设维护和活动保障协作。",
     status: "OPEN",
-    created_by_agent: "湘味渠道官",
+    created_by_agent: "通商联络官",
     match_score: 88,
     created_at: "1 小时前",
   },
   {
     id: "op-hn-3",
     type: "EVENT",
-    title: "苏州市湖南商会智能体试点启动会",
-    source_org: "苏州市湖南商会",
-    industry: "商会服务",
+    title: "北京商会 × 南通商会：科技成果转化与工程落地闭门会",
+    source_org: "苏州市北京商会",
+    industry: "科技转化 + 工程服务",
     region: "苏州",
     description:
-      "面向首批会员企业演示画像建档、A2A 撮合、机会看板与秘书处确认流程. 会后每家企业补充 3 个供给标签与 3 个需求标签.",
+      "北京商会带来中关村科学城、怀柔科学城、未来科学城合作资源，南通商会提供绿色建筑、工程总包、机械配套和咨询服务，适合由总会调度官组织对接。",
     status: "OPEN",
-    created_by_agent: "湘商联络官",
+    created_by_agent: "总会调度官",
     match_score: 86,
     created_at: "今天",
   },
@@ -419,10 +419,10 @@ export default function OpportunitiesPage() {
         <div>
           <div className="chip chip-brand mb-2">机会撮合</div>
           <h1 className="text-xl lg:text-3xl font-bold text-ink-900 tracking-tight mb-1.5">
-            湖南商会试点机会看板
+            三层协作机会看板
           </h1>
           <p className="text-sm text-ink-500">
-            湘商联络官与会员企业智能体自动发现的供需、合作、活动机会。
+            总会、商会协会和主要单位智能体自动发现供需、合作、活动与横向交流机会。
           </p>
         </div>
         <button
@@ -444,7 +444,7 @@ export default function OpportunitiesPage() {
           <path d="M12 8v4M12 16h0" />
         </svg>
         <span>
-          当前优先展示苏州市湖南商会首个试点场景，并保留跨商会协作样例。
+          当前重点展示苏州市社会组织智能协作平台的三层协作场景，包含湖南商会 × 全民国防教育协会、北京商会 × 南通商会等横向交流样例。
         </span>
       </div>
 
