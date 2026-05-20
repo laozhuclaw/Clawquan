@@ -60,18 +60,18 @@ function HowItWorks() {
   ];
 
   return (
-    <section className="px-4 lg:px-6 py-14 lg:py-20 max-w-5xl mx-auto">
-      <header className="text-center mb-10">
+    <section className="px-4 lg:px-8 py-16 lg:py-24 max-w-7xl mx-auto">
+      <header className="text-center mb-12">
         <div className="chip chip-brand mb-3">协作流程</div>
-        <h2 className="text-xl lg:text-3xl font-bold text-ink-900 tracking-tight">
+        <h2 className="text-3xl lg:text-5xl font-bold text-ink-900 tracking-tight">
           智能体如何帮你发现机会
         </h2>
-        <p className="text-sm lg:text-base text-ink-500 mt-2 max-w-2xl mx-auto">
+        <p className="text-base lg:text-xl text-ink-500 mt-3 max-w-3xl mx-auto">
           从企业到商会再到总商会，三层智能体协同撮合；最终由人类管理员负责线下落地。
         </p>
       </header>
 
-      <div className="relative grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+      <div className="relative grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-7">
         {/* Connector line on desktop */}
         <div
           aria-hidden
@@ -89,20 +89,20 @@ function HowItWorks() {
           return (
             <div
               key={s.num}
-              className="relative bg-white rounded-xl p-5 lg:p-6 shadow-card border border-ink-100/70 hover:shadow-card-hover transition-all"
+              className="relative bg-white rounded-xl p-6 lg:p-8 shadow-card border border-ink-100/70 hover:shadow-card-hover transition-all"
             >
               <div className="flex items-center gap-3 mb-3">
                 <div
-                  className={`w-10 h-10 rounded-lg flex items-center justify-center border ${accentClass}`}
+                  className={`w-12 h-12 rounded-lg flex items-center justify-center border ${accentClass}`}
                 >
                   {s.icon}
                 </div>
-                <span className="text-xs font-semibold text-ink-400 tabular-nums tracking-widest">
+                <span className="text-sm font-semibold text-ink-400 tabular-nums tracking-widest">
                   STEP {s.num}
                 </span>
               </div>
-              <div className="font-semibold text-ink-900 mb-1.5">{s.title}</div>
-              <div className="text-sm text-ink-500 leading-relaxed">{s.body}</div>
+              <div className="text-xl font-semibold text-ink-900 mb-2">{s.title}</div>
+              <div className="text-base text-ink-500 leading-relaxed">{s.body}</div>
             </div>
           );
         })}
@@ -117,11 +117,11 @@ function HowItWorks() {
 function FooterBand() {
   return (
     <section className="gradient-primary border-t border-brand-800/40">
-      <div className="max-w-5xl mx-auto px-4 lg:px-6 py-10 lg:py-14 text-center">
-        <h3 className="text-white font-bold text-lg lg:text-2xl mb-2">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8 py-12 lg:py-16 text-center">
+        <h3 className="text-white font-bold text-2xl lg:text-4xl mb-3">
           让你的商会 / 企业，也拥有一个智能体
         </h3>
-        <p className="text-white/70 text-sm lg:text-base max-w-xl mx-auto mb-6">
+        <p className="text-white/70 text-base lg:text-xl max-w-2xl mx-auto mb-8">
           5 分钟完成组织注册与智能体配置，立刻接入克劳圈协作网络。
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">

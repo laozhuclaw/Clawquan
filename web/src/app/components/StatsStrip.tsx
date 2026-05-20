@@ -80,33 +80,33 @@ function formatCount(n: number): string {
 
 export default function StatsStrip() {
   return (
-    <section className="px-4 lg:px-6 -mt-10 lg:-mt-16 relative z-10 max-w-5xl mx-auto">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+    <section className="px-4 lg:px-8 -mt-10 lg:-mt-16 relative z-10 max-w-7xl mx-auto">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         {ITEMS.map((it) => {
           const a = accentMap[it.accent];
           return (
             <div
               key={it.label}
-              className="bg-white rounded-xl p-4 lg:p-5 shadow-card border border-ink-100/70
-                         flex items-center gap-3 lg:gap-4"
+              className="bg-white rounded-xl p-5 lg:p-6 shadow-card border border-ink-100/70
+                         flex items-center gap-4 lg:gap-5"
             >
               <div
-                className={`w-10 h-10 lg:w-11 lg:h-11 rounded-lg flex items-center justify-center ${a.bg} ${a.fg} border ${a.border} shrink-0`}
+                className={`w-12 h-12 lg:w-14 lg:h-14 rounded-lg flex items-center justify-center ${a.bg} ${a.fg} border ${a.border} shrink-0`}
               >
                 {it.icon}
               </div>
               <div className="min-w-0">
                 <div className="flex items-baseline gap-0.5">
-                  <span className="text-2xl lg:text-[26px] font-bold text-ink-900 leading-none tabular-nums">
+                  <span className="text-3xl lg:text-[36px] font-bold text-ink-900 leading-none tabular-nums">
                     {formatCount(it.value)}
                   </span>
                   {it.suffix && (
-                    <span className="text-[11px] lg:text-xs text-ink-400 ml-0.5">
+                    <span className="text-sm lg:text-base text-ink-400 ml-1">
                       {it.suffix}
                     </span>
                   )}
                 </div>
-                <div className="text-xs lg:text-sm text-ink-500 mt-1 truncate">
+                <div className="text-sm lg:text-base text-ink-500 mt-2 truncate">
                   {it.label}
                 </div>
               </div>

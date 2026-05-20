@@ -70,20 +70,20 @@ export default function OrgTreePreview() {
   }
 
   return (
-    <section className="px-4 lg:px-6 pt-10 lg:pt-16 pb-6 max-w-5xl mx-auto">
-      <header className="flex items-end justify-between mb-5">
+    <section className="px-4 lg:px-8 pt-12 lg:pt-20 pb-8 max-w-7xl mx-auto">
+      <header className="flex items-end justify-between mb-8">
         <div>
           <div className="chip chip-brand mb-2">组织网络</div>
-          <h2 className="text-xl lg:text-3xl font-bold text-ink-900 tracking-tight">
+          <h2 className="text-3xl lg:text-5xl font-bold text-ink-900 tracking-tight">
             总会 → 商会协会 → 企业，三层连通
           </h2>
-          <p className="text-sm text-ink-500 mt-1">
+          <p className="text-base lg:text-xl text-ink-500 mt-3">
             从苏州市社会组织总会到一线企业，每一层都配备自己的智能体代表。
           </p>
         </div>
         <Link
           href="/organizations"
-          className="hidden sm:inline-flex items-center gap-1 text-brand-700 text-sm font-medium hover:underline shrink-0"
+          className="hidden sm:inline-flex items-center gap-1.5 text-brand-700 text-base lg:text-lg font-semibold hover:underline shrink-0"
         >
           查看全部
           <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -120,7 +120,7 @@ export default function OrgTreePreview() {
           <button
             type="button"
             onClick={toggleAll}
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-500
+            className="inline-flex items-center gap-1.5 text-sm lg:text-base font-medium text-ink-500
                        hover:text-brand-700 transition-colors px-2.5 py-1.5 rounded-md
                        hover:bg-brand-50 border border-transparent hover:border-brand-100"
           >
@@ -147,7 +147,7 @@ export default function OrgTreePreview() {
         </div>
       )}
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {tree?.map((grand) => (
           <OrgNode
             key={grand.id}
@@ -208,13 +208,13 @@ function OrgNode({
 
       <Link
         href={`/organization?id=${org.id}`}
-        className={`group flex items-center gap-3 p-3.5 pr-2 bg-white rounded-xl
+        className={`group flex items-center gap-4 p-4 pr-3 bg-white rounded-xl
                     shadow-card hover:shadow-card-hover border border-ink-100/70
                     transition-all ${typeAccent}`}
         style={{ marginLeft: depth * 24 }}
       >
         <div
-          className={`shrink-0 w-10 h-10 rounded-lg flex items-center justify-center
+          className={`shrink-0 w-12 h-12 rounded-lg flex items-center justify-center
                       ${
                         org.type === "GRAND_CHAMBER"
                           ? "bg-brand-700 text-white"
@@ -228,7 +228,7 @@ function OrgNode({
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold text-ink-900 truncate">
+            <span className="text-lg lg:text-xl font-semibold text-ink-900 truncate">
               {org.name}
             </span>
             {org.is_verified && <span className="chip chip-brand">✓ 认证</span>}
@@ -238,7 +238,7 @@ function OrgNode({
               </span>
             )}
           </div>
-          <div className="text-[12px] text-ink-500 flex flex-wrap gap-x-3 gap-y-0.5 mt-0.5 tabular-nums">
+          <div className="text-sm lg:text-base text-ink-500 flex flex-wrap gap-x-4 gap-y-1 mt-1 tabular-nums">
             <span>{ORG_TYPE_LABEL[org.type]}</span>
             {org.region && (
               <span className="flex items-center gap-0.5">
@@ -277,7 +277,7 @@ function OrgNode({
                        text-ink-500 hover:text-brand-700 hover:bg-brand-50
                        border border-transparent hover:border-brand-100 transition-colors"
           >
-            <span className="text-[11px] font-semibold tabular-nums">
+            <span className="text-sm font-semibold tabular-nums">
               {org.children!.length}
             </span>
             <svg
@@ -309,7 +309,7 @@ function OrgNode({
       </Link>
 
       {hasChildren && isOpen && (
-        <div className="mt-2.5 space-y-2.5">
+        <div className="mt-3 space-y-3">
           {org.children!.map((c) => (
             <OrgNode
               key={c.id}

@@ -44,38 +44,38 @@ export default function Navbar() {
                  border-b border-black/10
                  shadow-[0_2px_8px_rgba(10,46,30,0.12)]"
     >
-      <div className="flex justify-between items-center px-4 lg:px-6 py-3 max-w-6xl mx-auto">
+      <div className="flex justify-between items-center px-4 lg:px-8 py-3.5 max-w-7xl mx-auto">
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2.5 text-white tap-highlight-transparent"
+          className="flex items-center gap-3 text-white tap-highlight-transparent"
         >
-          <span className="w-10 h-10 sm:w-11 sm:h-11 rounded-full overflow-hidden shadow-sm bg-transparent shrink-0">
+          <span className="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden shadow-sm bg-transparent shrink-0">
             <img
-              src="/logo-nav.png"
+              src="/logo-color.png"
               alt="克劳圈"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
             />
           </span>
           <div className="flex flex-col leading-tight">
-            <span className="font-bold text-[17px] tracking-wide">
+            <span className="font-bold text-[20px] tracking-wide">
               克劳圈
             </span>
-            <span className="hidden sm:inline text-[10px] font-medium opacity-70 tracking-[0.2em] uppercase">
+            <span className="hidden sm:inline text-[12px] font-medium opacity-70 tracking-[0.22em] uppercase">
               ClawQuan
             </span>
           </div>
         </Link>
 
         {/* Desktop nav */}
-        <ul className="hidden lg:flex items-center gap-1">
+        <ul className="hidden lg:flex items-center gap-2">
           {NAV_ITEMS.map((item) => {
             const active = isActive(item.href);
             return (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-md text-base font-semibold transition-colors ${
                     active
                       ? "text-white bg-white/10"
                       : "text-white/80 hover:text-white hover:bg-white/5"
@@ -92,7 +92,7 @@ export default function Navbar() {
               <li>
                 <Link
                   href="/me"
-                  className="px-3 py-1.5 rounded-md text-sm font-medium
+                  className="px-4 py-2 rounded-md text-base font-semibold
                              text-white/90 hover:text-white hover:bg-white/5 transition-colors"
                 >
                   我的
@@ -101,7 +101,7 @@ export default function Navbar() {
               <li>
                 <button
                   onClick={handleLogout}
-                  className="px-3 py-1.5 rounded-md text-sm
+                  className="px-4 py-2 rounded-md text-base
                              text-white/70 hover:text-white hover:bg-white/5"
                 >
                   退出
@@ -112,7 +112,7 @@ export default function Navbar() {
             <li>
               <Link
                 href="/login"
-                className="ml-1 px-4 py-1.5 rounded-md text-sm font-semibold
+                className="ml-2 px-5 py-2 rounded-md text-base font-semibold
                            bg-gold-400 text-brand-900
                            shadow-[0_2px_6px_rgba(212,162,74,0.35)]
                            hover:bg-gold-500 hover:text-white transition-colors"

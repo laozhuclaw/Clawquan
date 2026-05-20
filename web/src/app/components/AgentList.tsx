@@ -69,8 +69,8 @@ export default function AgentList() {
   }, []);
 
   return (
-    <section className="px-4 py-12" id="agents">
-      <h2 className="text-2xl lg:text-3xl font-bold text-center text-gray-900 mb-8">
+    <section className="px-4 lg:px-8 py-16 lg:py-24" id="agents">
+      <h2 className="text-3xl lg:text-5xl font-bold text-center text-gray-900 mb-10">
         热门智能体
       </h2>
 
