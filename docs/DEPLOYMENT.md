@@ -30,6 +30,55 @@
 
 ---
 
+### 阿里云 AICN 命名空间路径
+
+当前阿里云同时保留根站和 AICN 命名空间访问：
+
+| 入口 | 静态目录 | 维护用户 | 说明 |
+|---|---|---|---|
+| `http://47.102.216.22/` | `/opt/clawquan/web/dist` | `aicn` | 原根站入口，保持不变 |
+| `http://47.102.216.22/aicn/suzhou/` | `/var/www/html/aicn/suzhou` | `aicn` | 苏州 AICN 新入口 |
+
+`/aicn/suzhou/` 是同一套 ClawQuan 静态导出页面的嵌套路径副本。因为 Next 静态导出中的 `/_next/`、`/api/` 和导航链接默认是根路径，部署到嵌套路径时需要重写为 `/aicn/suzhou/...`。仓库提供了脚本：
+
+```bash
+cd /opt/clawquan
+# 先完成 web/dist 构建
+scripts/deploy-aicn-suzhou-static.sh
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+Nginx 需要保留这些路由：
+
+```nginx
+location = /aicn/suzhou { return 301 /aicn/suzhou/; }
+
+location /aicn/suzhou/api/ {
+    proxy_pass http://127.0.0.1:8000/api/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+
+location /aicn/suzhou/health {
+    proxy_pass http://127.0.0.1:8000/health;
+}
+
+location /aicn/suzhou/_next/static/ {
+    alias /var/www/html/aicn/suzhou/_next/static/;
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+}
+
+location /aicn/suzhou/ {
+    alias /var/www/html/aicn/suzhou/;
+    index index.html;
+    try_files $uri $uri.html $uri/ /aicn/suzhou/index.html;
+}
+```
+
+
 ## 2. 一次部署的执行清单
 
 ### 后端（Python 3.10+ 推荐）
@@ -54,8 +103,10 @@ python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 2
 cd web
 npm ci                    # 注意是 ci 不是 install，复用 lockfile
 npm run build             # 输出到 web/dist/
-# 把 web/dist/ 整个同步到 Nginx 的静态目录，例如:
-rsync -av --delete dist/ /var/www/clawquan/
+# 根站直接使用 /opt/clawquan/web/dist
+# 如需同步 AICN 苏州嵌套入口，构建完成后运行：
+cd /opt/clawquan
+scripts/deploy-aicn-suzhou-static.sh
 ```
 
 ### Nginx 关键配置
