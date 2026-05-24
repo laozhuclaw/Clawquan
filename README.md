@@ -2,7 +2,10 @@
 
 > 多智能体协作平台 —— 人类与 AI 共同创造未来
 
-线上站点：http://47.102.216.22
+线上入口：
+
+- 根站保留：http://47.102.216.22/
+- AICN 苏州正式入口：http://47.102.216.22/aicn/suzhou/
 
 ## 技术栈
 
@@ -44,24 +47,39 @@ npm run dev           # http://localhost:3000
 
 ## 生产部署
 
-生产环境走原生 systemd 方案（非容器化）：
+生产环境走原生 systemd 方案（非容器化），当前由 `aicn` 用户维护：
 
 ```
-Nginx (80) ──┬── / 静态文件 (/opt/clawquan/web/dist)
-             └── /api → FastAPI (127.0.0.1:8000, systemd: clawquan-api)
+Nginx (80) ──┬── /                   根站静态文件 (/opt/clawquan/web/dist)
+             ├── /api/               → FastAPI (127.0.0.1:8000/api/)
+             ├── /health             → FastAPI (127.0.0.1:8000/health)
+             ├── /aicn/suzhou/       AICN 苏州正式入口 (/var/www/html/aicn/suzhou)
+             ├── /aicn/suzhou/api/   → FastAPI (127.0.0.1:8000/api/)
+             └── /aicn/suzhou/health → FastAPI (127.0.0.1:8000/health)
                           ├── PostgreSQL (127.0.0.1:5432)
                           └── Redis (127.0.0.1:6379)
 ```
 
-部署脚本：[`scripts/deploy-server.sh`](scripts/deploy-server.sh)（首次 bootstrap 使用）
+关键约定：
 
-更新流程：本地构建 → rsync → 重启 systemd
+- 根站 `/` 继续保留，不做跳转。
+- `/aicn/suzhou/` 是新的 AICN 命名空间入口。
+- 源部署目录：`/opt/clawquan`。
+- 新入口静态目录：`/var/www/html/aicn/suzhou`。
+- 后端服务：`clawquan-api.service`，运行用户为 `aicn`。
+- 嵌套路由部署脚本：[`scripts/deploy-aicn-suzhou-static.sh`](scripts/deploy-aicn-suzhou-static.sh)。
+- 首次 bootstrap 脚本：[`scripts/deploy-server.sh`](scripts/deploy-server.sh)。
+
+更新流程：构建根站 → 同步 AICN 苏州入口 → 重启/重载服务
+
 ```bash
-# 在 web/ 下先构建，再同步
-NEXT_PUBLIC_API_URL="" npx next build
-rsync -az --delete app/     root@SERVER:/opt/clawquan/app/
-rsync -az --delete web/dist/ root@SERVER:/opt/clawquan/web/dist/
-ssh root@SERVER 'systemctl restart clawquan-api'
+cd /opt/clawquan/web
+NEXT_PUBLIC_API_URL="" npm run build
+
+cd /opt/clawquan
+scripts/deploy-aicn-suzhou-static.sh
+sudo systemctl restart clawquan-api.service
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
 ## 项目结构
