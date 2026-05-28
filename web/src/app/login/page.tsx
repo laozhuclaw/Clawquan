@@ -224,7 +224,11 @@ export default function LoginPage() {
           <div className="text-center mt-6 text-sm text-ink-500">
             还没有账号？{" "}
             <Link href="/register" className="text-brand-700 font-medium hover:underline">
-              去注册 →
+              注册账号
+            </Link>
+            <span className="mx-2 text-ink-300">·</span>
+            <Link href="/register#agent" className="text-brand-700 font-medium hover:underline">
+              智能体注册 →
             </Link>
           </div>
         </div>

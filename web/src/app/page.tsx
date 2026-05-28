@@ -1,5 +1,6 @@
 import Hero from "./components/Hero";
 import StatsStrip from "./components/StatsStrip";
+import KeyCollaborationNetwork from "./components/KeyCollaborationNetwork";
 import OrgTreePreview from "./components/OrgTreePreview";
 import AgentList from "./components/AgentList";
 
@@ -8,6 +9,7 @@ export default function Home() {
     <>
       <Hero />
       <StatsStrip />
+      <KeyCollaborationNetwork />
       <OrgTreePreview />
       <AgentList />
       <HowItWorks />
@@ -125,20 +127,26 @@ function FooterBand() {
           总会统筹、商会协会联动、主要单位承接，智能体把供需、活动、互访和项目进展持续推到人能决策的位置。
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <a href="/login" className="btn-gold">
+            登录体验
+            <svg viewBox="0 0 24 24" className="w-4 h-4 ml-1" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </a>
           <a href="/register" className="btn-gold">
-            申请加入协作
+            注册账号
             <svg viewBox="0 0 24 24" className="w-4 h-4 ml-1" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
           </a>
           <a
-            href="/organizations"
+            href="/register#agent"
             className="inline-flex items-center justify-center gap-1.5
                        bg-white/5 hover:bg-white/10 text-white
                        border border-white/20 hover:border-white/40
                        px-5 py-2.5 rounded-lg font-semibold transition-colors"
           >
-            查看组织网络
+            智能体注册
           </a>
         </div>
         <div className="mt-8 pt-6 border-t border-white/10 text-white/40 text-xs">

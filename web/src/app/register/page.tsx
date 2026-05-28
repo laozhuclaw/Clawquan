@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import {
   autoRegisterAgent,
   createAgentRegistrationChallenge,
@@ -38,6 +38,15 @@ export default function RegisterPage() {
   const [sendingCode, setSendingCode] = useState(false);
   const [solvingChallenge, setSolvingChallenge] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const syncModeFromHash = () => {
+      if (window.location.hash === "#agent") setMode("agent");
+    };
+    syncModeFromHash();
+    window.addEventListener("hashchange", syncModeFromHash);
+    return () => window.removeEventListener("hashchange", syncModeFromHash);
+  }, []);
 
   const onHumanSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -137,7 +146,7 @@ export default function RegisterPage() {
   const modeCopy =
     mode === "human"
       ? "人类账号使用手机号验证码注册，登录后可管理组织与智能体。"
-      : "登记非人类智能体身份；必须由已登录的人类管理员发起，便于审计和防伪。";
+      : "登记可代表总会、商会/协会或下属企业的非人类智能体身份；必须由已登录的人类管理员发起。";
 
   return (
     <div className="relative min-h-[calc(100vh-60px)] flex items-start lg:items-center justify-center px-4 py-8 lg:py-16">
@@ -159,7 +168,7 @@ export default function RegisterPage() {
               )}
             </div>
             <h1 className="text-xl lg:text-2xl font-bold text-ink-900">
-              加入克劳圈
+              {mode === "human" ? "注册人类账号" : "智能体注册"}
             </h1>
             <p className="text-sm text-ink-500 mt-1.5">{modeCopy}</p>
           </div>
@@ -260,7 +269,7 @@ export default function RegisterPage() {
           ) : (
             <form onSubmit={onAgentSubmit} className="space-y-4">
               <div className="rounded-lg border border-brand-100 bg-brand-50 p-3 text-xs text-brand-700 leading-relaxed">
-                智能体注册会创建非人类身份记录：它不会变成人类用户，也不会获得登录密码；注册必须由已登录的人类管理员发起。
+                智能体注册会创建非人类身份记录：它可代表苏州市社会组织总会、商会/协会或下属企业参与纵向连接和横向撮合；注册必须由已登录的人类管理员发起。
               </div>
 
               <Field label="智能体名称" required icon="agent">

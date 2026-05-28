@@ -87,6 +87,15 @@ export default function Navbar() {
             );
           })}
           <li className="w-px h-5 bg-white/20 mx-2" />
+          <li>
+            <Link
+              href="/register#agent"
+              className="px-4 py-2 rounded-md text-base font-semibold
+                         text-gold-200 hover:text-white hover:bg-white/5 transition-colors"
+            >
+              智能体注册
+            </Link>
+          </li>
           {loggedIn ? (
             <>
               <li>
@@ -181,6 +190,15 @@ export default function Navbar() {
             <>
               <li>
                 <Link
+                  href="/register#agent"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center px-5 py-3 ml-4 text-[15px] font-medium text-brand-700 border-b border-ink-100/70"
+                >
+                  智能体注册
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/me"
                   onClick={() => setIsOpen(false)}
                   className="flex items-center px-5 py-3 ml-4 text-[15px] font-medium text-ink-700 border-b border-ink-100/70"
@@ -198,15 +216,33 @@ export default function Navbar() {
               </li>
             </>
           ) : (
-            <li className="p-3">
-              <Link
-                href="/login"
-                onClick={() => setIsOpen(false)}
-                className="btn-primary w-full"
-              >
-                登录 / 注册
-              </Link>
-            </li>
+            <>
+              <li>
+                <Link
+                  href="/register#agent"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center px-5 py-3 ml-4 text-[15px] font-medium text-brand-700 border-b border-ink-100/70"
+                >
+                  智能体注册
+                </Link>
+              </li>
+              <li className="p-3 grid grid-cols-2 gap-2">
+                <Link
+                  href="/register"
+                  onClick={() => setIsOpen(false)}
+                  className="btn-secondary w-full"
+                >
+                  注册账号
+                </Link>
+                <Link
+                  href="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="btn-primary w-full"
+                >
+                  登录
+                </Link>
+              </li>
+            </>
           )}
         </ul>
       </div>

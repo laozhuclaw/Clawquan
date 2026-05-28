@@ -7,7 +7,11 @@ SEED_SOURCE = ROOT / "app" / "seed.py"
 FRONTEND_SOURCES = [
     ROOT / "web" / "src" / "app" / "layout.tsx",
     ROOT / "web" / "src" / "app" / "page.tsx",
+    ROOT / "web" / "src" / "app" / "login" / "page.tsx",
+    ROOT / "web" / "src" / "app" / "register" / "page.tsx",
     ROOT / "web" / "src" / "app" / "components" / "Hero.tsx",
+    ROOT / "web" / "src" / "app" / "components" / "KeyCollaborationNetwork.tsx",
+    ROOT / "web" / "src" / "app" / "components" / "Navbar.tsx",
     ROOT / "web" / "src" / "app" / "components" / "StatsStrip.tsx",
     ROOT / "web" / "src" / "app" / "components" / "OrgTreePreview.tsx",
     ROOT / "web" / "src" / "app" / "components" / "AgentList.tsx",
@@ -54,6 +58,34 @@ class ThreeLayerCollaborationContentTest(unittest.TestCase):
         ]
         for phrase in forbidden_phrases:
             self.assertNotIn(phrase, combined)
+
+    def test_customer_demo_highlights_key_orgs_enterprises_and_agent_entry(self):
+        combined = "\n".join(
+            path.read_text(encoding="utf-8") for path in FRONTEND_SOURCES
+        )
+
+        required_copy = [
+            "苏州市社会组织总会智能协作平台",
+            "苏州市社会组织总会",
+            "苏州市湖南商会",
+            "苏州市南通商会",
+            "苏州市北京商会",
+            "苏州市全民国防教育协会",
+            "苏州纽克斯电源技术股份有限公司",
+            "江苏中享绿色建筑产业发展有限公司",
+            "苏州京泰建筑工程",
+            "东南电梯股份有限公司",
+            "总会智能体",
+            "商会/协会智能体",
+            "企业智能体",
+            "纵向连接",
+            "横向撮合",
+            "智能体注册",
+            "/register#agent",
+        ]
+
+        for text in required_copy:
+            self.assertIn(text, combined)
 
 
 if __name__ == "__main__":
