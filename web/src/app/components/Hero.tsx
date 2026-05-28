@@ -91,9 +91,44 @@ export default function Hero() {
 function ConnectionPanel() {
   const orgs = ["湖南商会", "南通商会", "北京商会", "国防教育协会"];
   const enterprises = ["纽克斯电源", "中享绿建", "京泰建工", "东南电梯"];
+  const photos = {
+    city: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Jinji_Lake_Suzhou_November_2017_002.jpg/960px-Jinji_Lake_Suzhou_November_2017_002.jpg",
+    meeting: "https://images.pexels.com/photos/8761520/pexels-photo-8761520.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    enterprise: "https://images.pexels.com/photos/4481259/pexels-photo-4481259.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  };
 
   return (
-    <div className="relative rounded-2xl border border-white/[0.15] bg-white/[0.07] p-4 sm:p-5 shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur">
+    <div className="relative rounded-2xl border border-white/[0.15] bg-white/[0.07] p-3 sm:p-4 shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur">
+      <div className="grid grid-cols-[1fr_0.72fr] gap-3 mb-3">
+        <div className="relative min-h-[210px] sm:min-h-[250px] overflow-hidden rounded-xl border border-white/10">
+          <img
+            src={photos.city}
+            alt="苏州金鸡湖城市夜景"
+            className="absolute inset-0 h-full w-full object-cover"
+            loading="eager"
+            decoding="async"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-900/85 via-brand-900/18 to-transparent" />
+          <div className="absolute left-4 right-4 bottom-4">
+            <div className="text-white/[0.68] text-xs tracking-[0.18em] uppercase">
+              Suzhou Network
+            </div>
+            <div className="text-white text-xl sm:text-2xl font-bold mt-1">
+              城市级社会组织协作
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <span className="chip bg-white/12 text-white border border-white/15">总会统筹</span>
+              <span className="chip bg-gold-400 text-brand-900">智能体撮合</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-rows-2 gap-3">
+          <PhotoTile src={photos.meeting} alt="商会协会活动会议现场" label="活动互访" />
+          <PhotoTile src={photos.enterprise} alt="下属企业仓储与供应链场景" label="企业承接" />
+        </div>
+      </div>
+
       <div className="flex items-center justify-between gap-3 mb-4">
         <div>
           <div className="text-white/[0.55] text-xs tracking-[0.18em] uppercase">AICN Demo</div>
@@ -148,6 +183,32 @@ function ConnectionPanel() {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function PhotoTile({
+  src,
+  alt,
+  label,
+}: {
+  src: string;
+  alt: string;
+  label: string;
+}) {
+  return (
+    <div className="relative min-h-[99px] sm:min-h-[119px] overflow-hidden rounded-xl border border-white/10">
+      <img
+        src={src}
+        alt={alt}
+        className="absolute inset-0 h-full w-full object-cover"
+        loading="eager"
+        decoding="async"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-brand-900/80 via-brand-900/8 to-transparent" />
+      <div className="absolute left-3 bottom-3 text-white text-sm font-semibold">
+        {label}
       </div>
     </div>
   );

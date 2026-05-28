@@ -11,6 +11,7 @@ FRONTEND_SOURCES = [
     ROOT / "web" / "src" / "app" / "register" / "page.tsx",
     ROOT / "web" / "src" / "app" / "components" / "Hero.tsx",
     ROOT / "web" / "src" / "app" / "components" / "KeyCollaborationNetwork.tsx",
+    ROOT / "web" / "src" / "app" / "components" / "ActivityEnterpriseShowcase.tsx",
     ROOT / "web" / "src" / "app" / "components" / "Navbar.tsx",
     ROOT / "web" / "src" / "app" / "components" / "StatsStrip.tsx",
     ROOT / "web" / "src" / "app" / "components" / "OrgTreePreview.tsx",
@@ -82,6 +83,27 @@ class ThreeLayerCollaborationContentTest(unittest.TestCase):
             "横向撮合",
             "智能体注册",
             "/register#agent",
+        ]
+
+        for text in required_copy:
+            self.assertIn(text, combined)
+
+    def test_homepage_has_activity_enterprise_and_photo_content(self):
+        combined = "\n".join(
+            path.read_text(encoding="utf-8") for path in FRONTEND_SOURCES
+        )
+
+        required_copy = [
+            "活动与企业素材",
+            "四家重点组织智能体协同演示会",
+            "企业国防教育与装备科普共创日",
+            "科技成果转化与工程落地闭门会",
+            "苏州城市协作底图",
+            "下属企业能力",
+            "东南e馆",
+            "神机营实践基地",
+            "images.pexels.com/photos/8761520",
+            "Jinji_Lake_Suzhou_November_2017_002.jpg",
         ]
 
         for text in required_copy:

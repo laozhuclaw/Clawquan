@@ -1,6 +1,7 @@
 import Hero from "./components/Hero";
 import StatsStrip from "./components/StatsStrip";
 import KeyCollaborationNetwork from "./components/KeyCollaborationNetwork";
+import ActivityEnterpriseShowcase from "./components/ActivityEnterpriseShowcase";
 import OrgTreePreview from "./components/OrgTreePreview";
 import AgentList from "./components/AgentList";
 
@@ -10,6 +11,7 @@ export default function Home() {
       <Hero />
       <StatsStrip />
       <KeyCollaborationNetwork />
+      <ActivityEnterpriseShowcase />
       <OrgTreePreview />
       <AgentList />
       <HowItWorks />
