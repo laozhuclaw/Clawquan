@@ -41,6 +41,11 @@ for q in ['"', "'"]:
     repls.extend([
         (q + '/_next/', q + '/aicn/suzhou/_next/'),
         (q + '/api/', q + '/aicn/suzhou/api/'),
+        (f'href:{q}/{q}', f'href:{q}/aicn/suzhou/{q}'),
+        (f'"href":{q}/{q}', f'"href":{q}/aicn/suzhou/{q}'),
+        (f'push({q}/{q})', f'push({q}/aicn/suzhou/{q})'),
+        (f'replace({q}/{q})', f'replace({q}/aicn/suzhou/{q})'),
+        (f'assign({q}/{q})', f'assign({q}/aicn/suzhou/{q})'),
     ])
 for attr in ['href', 'src', 'action']:
     repls.append((f'{attr}="/"', f'{attr}="/aicn/suzhou/"'))
@@ -53,6 +58,12 @@ for route in routes:
         (f'"/{route}"', f'"/aicn/suzhou/{route}"'),
         (f"'/{route}'", f"'/aicn/suzhou/{route}'"),
         (f'`/{route}`', f'`/aicn/suzhou/{route}`'),
+        (f'"/{route}#', f'"/aicn/suzhou/{route}#'),
+        (f"'/{route}#", f"'/aicn/suzhou/{route}#"),
+        (f'`/{route}#', f'`/aicn/suzhou/{route}#'),
+        (f'"/{route}?', f'"/aicn/suzhou/{route}?'),
+        (f"'/{route}?", f"'/aicn/suzhou/{route}?"),
+        (f'`/{route}?', f'`/aicn/suzhou/{route}?'),
         (f'"/{route}/', f'"/aicn/suzhou/{route}/'),
         (f"'/{route}/", f"'/aicn/suzhou/{route}/"),
     ])
