@@ -40,6 +40,7 @@ export default function Navbar() {
 
   return (
     <nav
+      data-site-scope="aicn-suzhou"
       className="sticky top-0 z-50 gradient-primary
                  border-b border-black/10
                  shadow-[0_2px_8px_rgba(10,46,30,0.12)]"
