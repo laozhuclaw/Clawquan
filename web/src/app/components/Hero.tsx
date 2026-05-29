@@ -92,9 +92,9 @@ function ConnectionPanel() {
   const orgs = ["湖南商会", "南通商会", "北京商会", "国防教育协会"];
   const enterprises = ["纽克斯电源", "中享绿建", "京泰建工", "东南电梯"];
   const photos = {
-    city: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Jinji_Lake_Suzhou_November_2017_002.jpg/960px-Jinji_Lake_Suzhou_November_2017_002.jpg",
-    meeting: "https://images.pexels.com/photos/8761520/pexels-photo-8761520.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    enterprise: "https://images.pexels.com/photos/4481259/pexels-photo-4481259.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    meeting: "/demo-images/generated-chamber-meeting.jpg",
+    hunan: "/demo-images/hn-chamber-group.jpg",
+    enterprise: "/demo-images/lumlux-product.jpg",
   };
 
   return (
@@ -102,8 +102,8 @@ function ConnectionPanel() {
       <div className="grid grid-cols-[1fr_0.72fr] gap-3 mb-3">
         <div className="relative min-h-[210px] sm:min-h-[250px] overflow-hidden rounded-xl border border-white/10">
           <img
-            src={photos.city}
-            alt="苏州金鸡湖城市夜景"
+            src={photos.meeting}
+            alt="苏州商会协会智能体协作会议场景"
             className="absolute inset-0 h-full w-full object-cover"
             loading="eager"
             decoding="async"
@@ -111,10 +111,10 @@ function ConnectionPanel() {
           <div className="absolute inset-0 bg-gradient-to-t from-brand-900/85 via-brand-900/18 to-transparent" />
           <div className="absolute left-4 right-4 bottom-4">
             <div className="text-white/[0.68] text-xs tracking-[0.18em] uppercase">
-              Suzhou Network
+              Suzhou Chamber Network
             </div>
             <div className="text-white text-xl sm:text-2xl font-bold mt-1">
-              城市级社会组织协作
+              商会协会智能协作现场
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
               <span className="chip bg-white/12 text-white border border-white/15">总会统筹</span>
@@ -124,8 +124,8 @@ function ConnectionPanel() {
         </div>
 
         <div className="grid grid-rows-2 gap-3">
-          <PhotoTile src={photos.meeting} alt="商会协会活动会议现场" label="活动互访" />
-          <PhotoTile src={photos.enterprise} alt="下属企业仓储与供应链场景" label="企业承接" />
+          <PhotoTile src={photos.hunan} alt="苏州市湖南商会会员大会现场" label="湖南商会" />
+          <PhotoTile src={photos.enterprise} alt="苏州纽克斯电源植物补光展示场景" label="湘商企业" />
         </div>
       </div>
 

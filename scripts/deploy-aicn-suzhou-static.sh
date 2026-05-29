@@ -41,8 +41,10 @@ for q in ['"', "'"]:
     repls.extend([
         (q + '/_next/', q + '/aicn/suzhou/_next/'),
         (q + '/api/', q + '/aicn/suzhou/api/'),
+        (q + '/demo-images/', q + '/aicn/suzhou/demo-images/'),
         ('\\' + q + '/_next/', '\\' + q + '/aicn/suzhou/_next/'),
         ('\\' + q + '/api/', '\\' + q + '/aicn/suzhou/api/'),
+        ('\\' + q + '/demo-images/', '\\' + q + '/aicn/suzhou/demo-images/'),
         (f'href:{q}/{q}', f'href:{q}/aicn/suzhou/{q}'),
         (f'"href":{q}/{q}', f'"href":{q}/aicn/suzhou/{q}'),
         (f'\\{q}href\\{q}:\\{q}/\\{q}', f'\\{q}href\\{q}:\\{q}/aicn/suzhou/\\{q}'),

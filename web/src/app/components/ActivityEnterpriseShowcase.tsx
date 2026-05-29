@@ -1,18 +1,16 @@
 import Link from "next/link";
 
 const IMAGE = {
-  suzhou:
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Jinji_Lake_Suzhou_November_2017_002.jpg/960px-Jinji_Lake_Suzhou_November_2017_002.jpg",
-  conference:
-    "https://images.pexels.com/photos/8761520/pexels-photo-8761520.jpeg?auto=compress&cs=tinysrgb&w=1600",
-  audience:
-    "https://images.pexels.com/photos/33411205/pexels-photo-33411205.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  workshop:
-    "https://images.pexels.com/photos/28683744/pexels-photo-28683744.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  factory:
-    "https://images.pexels.com/photos/11106972/pexels-photo-11106972.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  warehouse:
-    "https://images.pexels.com/photos/4481259/pexels-photo-4481259.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  chamberMeeting: "/demo-images/generated-chamber-meeting.jpg",
+  enterpriseVisit: "/demo-images/generated-enterprise-visit.jpg",
+  hunanGroup: "/demo-images/hn-chamber-group.jpg",
+  hunanActivity: "/demo-images/hn-activity-2026-b.jpg",
+  hunanEnterprise: "/demo-images/hn-enterprise-jiang.jpg",
+  defenseActivity: "/demo-images/sz81-activity-a.jpg",
+  defenseBase: "/demo-images/dndt-hero.jpg",
+  lumlux: "/demo-images/lumlux-product.jpg",
+  dndtShowroom: "/demo-images/dndt-showroom.jpg",
+  yuantai: "/demo-images/yuantai-banner.jpg",
 };
 
 const ACTIVITIES = [
@@ -21,7 +19,7 @@ const ACTIVITIES = [
     title: "四家重点组织智能体协同演示会",
     date: "6月上旬",
     location: "苏州 · 总会秘书处",
-    image: IMAGE.conference,
+    image: IMAGE.hunanActivity,
     body: "总会调度官牵头，把湖南商会、南通商会、北京商会、全民国防教育协会的活动、企业和需求放到同一张协作表。",
     outputs: ["组织画像补全", "智能体互联演示", "客户现场闭环讲解"],
   },
@@ -30,7 +28,7 @@ const ACTIVITIES = [
     title: "企业国防教育与装备科普共创日",
     date: "6月中旬",
     location: "东南e馆 / 神机营实践基地",
-    image: IMAGE.audience,
+    image: IMAGE.defenseActivity,
     body: "围绕宏瑞达科技、东南电梯、神机营体育等单位，形成装备检测、工业研学、国防教育实践的组合活动。",
     outputs: ["研学路线", "活动安全清单", "企业公益品牌内容"],
   },
@@ -39,7 +37,7 @@ const ACTIVITIES = [
     title: "科技成果转化与工程落地闭门会",
     date: "6月下旬",
     location: "苏州工业园区",
-    image: IMAGE.workshop,
+    image: IMAGE.enterpriseVisit,
     body: "北京商会导入科技与服务资源，南通商会组织绿色建筑、工程总包、咨询工程和物流企业承接落地。",
     outputs: ["联合方案", "询价跟进表", "项目负责人清单"],
   },
@@ -49,7 +47,7 @@ const ENTERPRISES = [
   {
     name: "苏州纽克斯电源技术股份有限公司",
     org: "苏州市湖南商会",
-    image: IMAGE.factory,
+    image: IMAGE.hunanEnterprise,
     focus: "植物补光、数字农业、控制系统",
     body: "可与国防教育实践基地、现代农业研学和科普展示活动做内容联动。",
     tags: ["制造业", "农业科技", "湘商资源"],
@@ -57,7 +55,7 @@ const ENTERPRISES = [
   {
     name: "江苏中享绿色建筑产业发展有限公司",
     org: "苏州市南通商会",
-    image: IMAGE.suzhou,
+    image: IMAGE.enterpriseVisit,
     focus: "绿色建筑、基地建设、空间改造",
     body: "适合承接协会活动空间、企业展厅、研学基地和公共服务场景建设。",
     tags: ["会长单位", "绿色建筑", "工程服务"],
@@ -65,7 +63,7 @@ const ENTERPRISES = [
   {
     name: "苏州京泰建筑工程",
     org: "苏州市北京商会",
-    image: IMAGE.workshop,
+    image: IMAGE.yuantai,
     focus: "厂房总包、办公空间、工程协调",
     body: "可与南通商会工程链条联合报价，承接在苏京商与兄弟商会的空间改造需求。",
     tags: ["京商资源", "厂房改造", "总包服务"],
@@ -73,7 +71,7 @@ const ENTERPRISES = [
   {
     name: "东南电梯股份有限公司",
     org: "苏州市全民国防教育协会",
-    image: IMAGE.warehouse,
+    image: IMAGE.dndtShowroom,
     focus: "装备制造、航天科普、工业研学",
     body: "东南e馆可作为企业研学和国防教育实践活动的高质量承接点。",
     tags: ["副会长单位", "实践基地", "装备制造"],
@@ -96,9 +94,9 @@ export default function ActivityEnterpriseShowcase() {
           </div>
 
           <div className="grid grid-cols-3 gap-2 lg:gap-3">
-            <ImageStrip src={IMAGE.suzhou} alt="苏州金鸡湖城市夜景" label="苏州城市协作底图" />
-            <ImageStrip src={IMAGE.conference} alt="商会协会会议活动" label="商会协会活动" />
-            <ImageStrip src={IMAGE.factory} alt="现代产业与企业场景" label="下属企业能力" />
+            <ImageStrip src={IMAGE.hunanGroup} alt="苏州市湖南商会会员大会现场" label="湖南商会活动" />
+            <ImageStrip src={IMAGE.defenseBase} alt="东南电梯东南e馆航天科普基地" label="协会实践基地" />
+            <ImageStrip src={IMAGE.lumlux} alt="苏州纽克斯电源植物补光展示" label="下属企业能力" />
           </div>
         </header>
 

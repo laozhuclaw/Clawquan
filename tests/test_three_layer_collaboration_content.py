@@ -98,16 +98,24 @@ class ThreeLayerCollaborationContentTest(unittest.TestCase):
             "四家重点组织智能体协同演示会",
             "企业国防教育与装备科普共创日",
             "科技成果转化与工程落地闭门会",
-            "苏州城市协作底图",
+            "湖南商会活动",
+            "协会实践基地",
             "下属企业能力",
             "东南e馆",
             "神机营实践基地",
-            "images.pexels.com/photos/8761520",
-            "Jinji_Lake_Suzhou_November_2017_002.jpg",
+            "/demo-images/generated-chamber-meeting.jpg",
+            "/demo-images/generated-enterprise-visit.jpg",
+            "/demo-images/hn-chamber-group.jpg",
+            "/demo-images/hn-enterprise-jiang.jpg",
+            "/demo-images/lumlux-product.jpg",
+            "/demo-images/dndt-showroom.jpg",
         ]
 
         for text in required_copy:
             self.assertIn(text, combined)
+
+        self.assertNotIn("images.pexels.com", combined)
+        self.assertNotIn("upload.wikimedia.org", combined)
 
 
 if __name__ == "__main__":

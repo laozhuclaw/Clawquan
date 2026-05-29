@@ -25,11 +25,13 @@ class AicnSuzhouDeployRewriteTest(unittest.TestCase):
             (src / "index.html").write_text(
                 '<a href="/">首页</a>'
                 '<a href="/register#agent">智能体注册</a>'
+                '<img src="/demo-images/lumlux-product.jpg">'
                 '<script src="/_next/static/chunks/app/layout.js"></script>'
                 '<script>self.__next_f.push([1,"'
                 r'\"href\":\"/login\"'
                 r'\"href\":\"/register#agent\"'
                 r'\"href\":\"/logo.jpg\"'
+                r'\"src\":\"/demo-images/generated-chamber-meeting.jpg\"'
                 '"])</script>',
                 encoding="utf-8",
             )
@@ -57,10 +59,12 @@ class AicnSuzhouDeployRewriteTest(unittest.TestCase):
 
             self.assertIn('href="/aicn/suzhou/"', html)
             self.assertIn('href="/aicn/suzhou/register#agent"', html)
+            self.assertIn('src="/aicn/suzhou/demo-images/lumlux-product.jpg"', html)
             self.assertIn('src="/aicn/suzhou/_next/static/chunks/app/layout.js"', html)
             self.assertIn(r'\"href\":\"/aicn/suzhou/login\"', html)
             self.assertIn(r'\"href\":\"/aicn/suzhou/register#agent\"', html)
             self.assertIn(r'\"href\":\"/aicn/suzhou/logo.jpg\"', html)
+            self.assertIn(r'\"src\":\"/aicn/suzhou/demo-images/generated-chamber-meeting.jpg\"', html)
             self.assertIn('href:"/aicn/suzhou/"', chunk)
             self.assertIn('push("/aicn/suzhou/")', chunk)
             self.assertIn('replace("/aicn/suzhou/")', chunk)
